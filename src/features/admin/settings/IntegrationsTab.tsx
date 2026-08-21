@@ -442,16 +442,10 @@ function WhatsappCard({ status, onChanged }: { status: Status; onChanged: () => 
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="space-y-1.5">
-              <Label>Provedor</Label>
-              <Select value={provider} onValueChange={(v) => setProvider(v as any)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="twilio">Twilio WhatsApp</SelectItem>
-                  <SelectItem value="evolution">Evolution API (self-hosted)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <p className="text-xs text-muted-foreground">
+              Provedor: <span className="font-medium text-foreground">Clint (WhatsApp Oficial da Meta)</span>
+            </p>
+
             {fields.map((f) => {
               const isConfigured = !!status[f.name];
               return (
