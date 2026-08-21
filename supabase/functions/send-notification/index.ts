@@ -32,7 +32,56 @@ function json(body: unknown, status = 200) {
   });
 }
 
-const GATEWAY_URL = "https://connector-gateway.lovable.dev";
+const CLINT_BASE = "https://api.clint.digital";
+
+// Separa E.164 em DDI + número local (Clint guarda os dois campos).
+function splitPhone(e164: string): { ddi: string; local: string } {
+  const digits = e164.replace(/^whatsapp:/, "").replace(/\D+/g, "");
+  if (digits.startsWith("55")) return { ddi: "55", local: digits.slice(2) };
+  if (digits.startsWith("351")) return { ddi: "351", local: digits.slice(3) };
+  if (digits.startsWith("1") && digits.length === 11) return { ddi: "1", local: digits.slice(1) };
+  return { ddi: digits.slice(0, 2), local: digits.slice(2) };
+}
+
+// Busca o contato na Clint pelo telefone; cria se não existir. Retorna o UUID.
+async function clintResolveContact(
+  apiKey: string,
+  ddi: string,
+  local: string,
+  name: string | null,
+  email: string | null,
+): Promise<string | null> {
+  const headers = { "Content-Type": "application/json", "api-token": apiKey };
+
+  const search = await fetch(
+    `${CLINT_BASE}/v1/contacts?ddi=${encodeURIComponent(ddi)}&phone=${encodeURIComponent(local)}&limit=1`,
+    { headers },
+  );
+  if (search.ok) {
+    const found = await search.json().catch(() => ({}));
+    const id = (found as any)?.data?.[0]?.id;
+    if (id) return id as string;
+  } else {
+    console.error("clint contact search failed", search.status, await search.text());
+  }
+
+  const create = await fetch(`${CLINT_BASE}/v1/contacts`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      name: name || `+${ddi}${local}`,
+      ddi,
+      phone: local,
+      ...(email ? { email } : {}),
+    }),
+  });
+  const created = await create.json().catch(() => ({}));
+  if (!create.ok) {
+    throw new Error((created as any)?.message || `clint_contact_${create.status}`);
+  }
+  return ((created as any)?.id ?? (created as any)?.data?.id ?? null) as string | null;
+}
+
 
 // --- E.164 normalization (BR-aware) ---
 function toE164(phone: string | null | undefined): string | null {
