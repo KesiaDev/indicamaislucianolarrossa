@@ -428,46 +428,41 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
                 onChange={(v) => setRegForm({ ...regForm, phone: v })}
               />
 
-              {isFirstUser && (
-                <div className="relative">
-                  <input
-                    type={showRegPass ? "text" : "password"}
-                    placeholder="Senha (mín. 6 caracteres)"
-                    autoComplete="new-password"
-                    value={regForm.password}
-                    onChange={(e) =>
-                      setRegForm({ ...regForm, password: e.target.value })
-                    }
-                    className="w-full px-[15px] pr-11 py-[11px] bg-muted rounded-md border border-input outline-none text-sm transition-colors focus:border-primary focus:bg-card placeholder:text-muted-foreground"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowRegPass((v) => !v)}
-                    aria-label={
-                      showRegPass ? "Ocultar senha" : "Mostrar senha"
-                    }
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  >
-                    {showRegPass ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-              )}
+              <div className="relative">
+                <input
+                  type={showRegPass ? "text" : "password"}
+                  placeholder="Palavra-passe (mín. 6 caracteres)"
+                  autoComplete="new-password"
+                  value={regForm.password}
+                  onChange={(e) =>
+                    setRegForm({ ...regForm, password: e.target.value })
+                  }
+                  className="w-full px-[15px] pr-11 py-[11px] bg-muted rounded-md border border-input outline-none text-sm transition-colors focus:border-primary focus:bg-card placeholder:text-muted-foreground"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowRegPass((v) => !v)}
+                  aria-label={
+                    showRegPass ? "Ocultar palavra-passe" : "Mostrar palavra-passe"
+                  }
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showRegPass ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
 
               <button
                 type="submit"
                 disabled={regBusy}
                 className="w-full h-11 rounded-md bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition disabled:opacity-60"
               >
-                {regBusy
-                  ? "A enviar…"
-                  : isFirstUser
-                    ? "Criar conta do aluno"
-                    : "Enviar confirmação"}
+                {regBusy ? "A criar conta…" : "Criar conta do aluno"}
               </button>
+
 
               <p className="text-xs text-muted-foreground">
                 Cria a tua conta de aluno para participar no programa de
