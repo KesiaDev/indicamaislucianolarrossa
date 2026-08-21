@@ -326,9 +326,10 @@ function WhatsappCard({ status, onChanged }: { status: Status; onChanged: () => 
     mutationFn: async () => {
       const { error: pe } = await supabase.rpc("set_vault_secret" as any, {
         p_name: "WHATSAPP_PROVIDER",
-        p_value: provider,
+        p_value: "clint",
       });
       if (pe) throw pe;
+
       for (const [k, v] of Object.entries(vals)) {
         if (!v.trim()) continue;
         const { error } = await supabase.rpc("set_vault_secret" as any, { p_name: k, p_value: v.trim() });
@@ -346,8 +347,8 @@ function WhatsappCard({ status, onChanged }: { status: Status; onChanged: () => 
 
   const remove = useMutation({
     mutationFn: async () => {
-      const names = ["WHATSAPP_PROVIDER", "TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN", "TWILIO_FROM",
-        "EVOLUTION_API_URL", "EVOLUTION_API_KEY", "EVOLUTION_INSTANCE"];
+      const names = ["WHATSAPP_PROVIDER", "CLINT_API_KEY", "CLINT_CHANNEL_ACCOUNT_ID"];
+
       for (const n of names) {
         const { error } = await supabase.rpc("delete_vault_secret" as any, { p_name: n });
         if (error) throw error;
@@ -392,24 +393,22 @@ function WhatsappCard({ status, onChanged }: { status: Status; onChanged: () => 
     }
   };
 
-  const fields = provider === "twilio"
-    ? [
-        { name: "TWILIO_ACCOUNT_SID", label: "Account SID", placeholder: "ACxxxxx" },
-        { name: "TWILIO_AUTH_TOKEN", label: "Auth Token", type: "password" as const },
-        { name: "TWILIO_FROM", label: "Número WhatsApp (from)", placeholder: "whatsapp:+14155238886" },
-      ]
-    : [
-        { name: "EVOLUTION_API_URL", label: "URL da API", placeholder: "https://evolution.seudominio.com" },
-        { name: "EVOLUTION_API_KEY", label: "API Key", type: "password" as const },
-        { name: "EVOLUTION_INSTANCE", label: "Instância", placeholder: "minha-instancia" },
-      ];
+  const fields = [
+    { name: "CLINT_API_KEY", label: "API Key da Clint", type: "password" as const, placeholder: "clint_live_..." },
+    {
+      name: "CLINT_CHANNEL_ACCOUNT_ID",
+      label: "ID da conta de canal (WhatsApp Oficial)",
+      placeholder: "550e8400-e29b-41d4-a716-446655440001",
+    },
+  ];
 
   return (
     <>
       <IntegrationCard
-        title="WhatsApp"
-        description={currentProvider ? `Provedor atual: ${currentProvider}` : "Escolha um provedor (Twilio ou Evolution API)."}
+        title="WhatsApp (Clint)"
+        description="Envio pela API da Clint usando o WhatsApp Oficial da Meta."
         icon={MessageCircle}
+
         connected={!!connected}
         extraActions={
           connected && (
