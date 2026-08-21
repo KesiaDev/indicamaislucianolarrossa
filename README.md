@@ -17,7 +17,6 @@ Resumo:
 | Provedor | URL |
 |---|---|
 | Resend (delivered/bounced/complained) | `https://<project>.supabase.co/functions/v1/resend-webhook` |
-| Twilio (status callback) | `https://<project>.supabase.co/functions/v1/twilio-status-webhook` |
 | Sistema externo (confirma conversão) | `https://<project>.supabase.co/functions/v1/conversion-webhook` |
 
 ### Exemplo: confirmar conversão
@@ -36,4 +35,4 @@ curl -X POST https://<project>.supabase.co/functions/v1/conversion-webhook \
 
 ## Notificações
 
-`send-notification` é interna (auth `Bearer <SERVICE_ROLE_KEY>`) e roteia entre Resend (e-mail) e Twilio/Evolution (WhatsApp). Eventos do Resend (bounce/complaint) entram em `notifications_suppressions` e bloqueiam reenvios automaticamente.
+`send-notification` é interna (auth `Bearer <SERVICE_ROLE_KEY>`) e roteia entre Resend (e-mail) e Clint (WhatsApp Oficial da Meta). Eventos do Resend (bounce/complaint) entram em `notifications_suppressions` e bloqueiam reenvios automaticamente.

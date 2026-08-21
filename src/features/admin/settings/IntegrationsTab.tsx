@@ -310,33 +310,26 @@ function ResendCard({ status, onChanged }: { status: Status; onChanged: () => vo
 
 function WhatsappCard({ status, onChanged }: { status: Status; onChanged: () => void }) {
   const { profile } = useAuth();
-  const currentProvider = (status.whatsapp_provider_value as string | null) || null;
-  const connected =
-    !!currentProvider &&
-    ((currentProvider === "twilio" && status.TWILIO_ACCOUNT_SID && status.TWILIO_AUTH_TOKEN && status.TWILIO_FROM) ||
-      (currentProvider === "evolution" && status.EVOLUTION_API_URL && status.EVOLUTION_API_KEY && status.EVOLUTION_INSTANCE));
+  const connected = !!status.CLINT_API_KEY && !!status.CLINT_CHANNEL_ACCOUNT_ID;
 
   const [open, setOpen] = useState(false);
   const [removeOpen, setRemoveOpen] = useState(false);
   const [testOpen, setTestOpen] = useState(false);
   const [testTo, setTestTo] = useState("");
   const [testing, setTesting] = useState(false);
-  const [provider, setProvider] = useState<"twilio" | "evolution">((currentProvider as any) ?? "twilio");
   const [vals, setVals] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    if (currentProvider) setProvider(currentProvider as any);
-  }, [currentProvider]);
-
   const onChange = (k: string, v: string) => setVals((s) => ({ ...s, [k]: v }));
+
 
   const save = useMutation({
     mutationFn: async () => {
       const { error: pe } = await supabase.rpc("set_vault_secret" as any, {
         p_name: "WHATSAPP_PROVIDER",
-        p_value: provider,
+        p_value: "clint",
       });
       if (pe) throw pe;
+
       for (const [k, v] of Object.entries(vals)) {
         if (!v.trim()) continue;
         const { error } = await supabase.rpc("set_vault_secret" as any, { p_name: k, p_value: v.trim() });
@@ -354,8 +347,8 @@ function WhatsappCard({ status, onChanged }: { status: Status; onChanged: () => 
 
   const remove = useMutation({
     mutationFn: async () => {
-      const names = ["WHATSAPP_PROVIDER", "TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN", "TWILIO_FROM",
-        "EVOLUTION_API_URL", "EVOLUTION_API_KEY", "EVOLUTION_INSTANCE"];
+      const names = ["WHATSAPP_PROVIDER", "CLINT_API_KEY", "CLINT_CHANNEL_ACCOUNT_ID"];
+
       for (const n of names) {
         const { error } = await supabase.rpc("delete_vault_secret" as any, { p_name: n });
         if (error) throw error;
@@ -400,24 +393,22 @@ function WhatsappCard({ status, onChanged }: { status: Status; onChanged: () => 
     }
   };
 
-  const fields = provider === "twilio"
-    ? [
-        { name: "TWILIO_ACCOUNT_SID", label: "Account SID", placeholder: "ACxxxxx" },
-        { name: "TWILIO_AUTH_TOKEN", label: "Auth Token", type: "password" as const },
-        { name: "TWILIO_FROM", label: "Número WhatsApp (from)", placeholder: "whatsapp:+14155238886" },
-      ]
-    : [
-        { name: "EVOLUTION_API_URL", label: "URL da API", placeholder: "https://evolution.seudominio.com" },
-        { name: "EVOLUTION_API_KEY", label: "API Key", type: "password" as const },
-        { name: "EVOLUTION_INSTANCE", label: "Instância", placeholder: "minha-instancia" },
-      ];
+  const fields = [
+    { name: "CLINT_API_KEY", label: "API Key da Clint", type: "password" as const, placeholder: "clint_live_..." },
+    {
+      name: "CLINT_CHANNEL_ACCOUNT_ID",
+      label: "ID da conta de canal (WhatsApp Oficial)",
+      placeholder: "550e8400-e29b-41d4-a716-446655440001",
+    },
+  ];
 
   return (
     <>
       <IntegrationCard
-        title="WhatsApp"
-        description={currentProvider ? `Provedor atual: ${currentProvider}` : "Escolha um provedor (Twilio ou Evolution API)."}
+        title="WhatsApp (Clint)"
+        description="Envio pela API da Clint usando o WhatsApp Oficial da Meta."
         icon={MessageCircle}
+
         connected={!!connected}
         extraActions={
           connected && (
@@ -451,16 +442,10 @@ function WhatsappCard({ status, onChanged }: { status: Status; onChanged: () => 
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="space-y-1.5">
-              <Label>Provedor</Label>
-              <Select value={provider} onValueChange={(v) => setProvider(v as any)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="twilio">Twilio WhatsApp</SelectItem>
-                  <SelectItem value="evolution">Evolution API (self-hosted)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <p className="text-xs text-muted-foreground">
+              Provedor: <span className="font-medium text-foreground">Clint (WhatsApp Oficial da Meta)</span>
+            </p>
+
             {fields.map((f) => {
               const isConfigured = !!status[f.name];
               return (
@@ -480,18 +465,15 @@ function WhatsappCard({ status, onChanged }: { status: Status; onChanged: () => 
                 </div>
               );
             })}
-            {provider === "evolution" && (
-              <div className="rounded-md border bg-muted/30 p-3 text-xs space-y-1">
-                <p className="font-medium text-foreground">Webhook de status (opcional)</p>
-                <p className="text-muted-foreground">
-                  Configure no painel do Evolution para receber confirmações de entrega/leitura.
-                  Use o header <code className="font-mono">apikey</code> com a mesma API Key acima.
-                </p>
-                <code className="block break-all rounded bg-background p-2 font-mono">
-                  https://{import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/evolution-status-webhook
-                </code>
-              </div>
-            )}
+            <div className="rounded-md border bg-muted/30 p-3 text-xs space-y-1">
+              <p className="font-medium text-foreground">Onde encontrar</p>
+              <p className="text-muted-foreground">
+                A API Key fica em Configurações → API na Clint. O ID da conta de canal é o
+                <code className="mx-1 font-mono">id</code> retornado em
+                <code className="mx-1 font-mono">/v2/channel-accounts</code> para o número de WhatsApp Oficial desejado.
+              </p>
+            </div>
+
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
@@ -507,7 +489,7 @@ function WhatsappCard({ status, onChanged }: { status: Status; onChanged: () => 
           <DialogHeader>
             <DialogTitle>Enviar WhatsApp de teste</DialogTitle>
             <DialogDescription>
-              Use formato internacional. A mensagem será enviada via {currentProvider}.
+              Use formato internacional. A mensagem será enviada via Clint.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-1.5">

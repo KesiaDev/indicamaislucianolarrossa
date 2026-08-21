@@ -23,7 +23,7 @@ Nenhum segredo de provedor externo é copiado. Tudo é configurado pelo painel a
 | `RESEND_API_KEY`, `RESEND_FROM` | Configurações → Integrações → Resend | **Sim** (e-mail de confirmação de indicador) |
 | `RESEND_WEBHOOK_SECRET` | Configurações → Integrações → Resend | Opcional (recomendado) |
 | `WEBHOOK_SECRET` | Configurações → Integrações → Webhook de conversão | **Sim** (se for receber conversão de sistema externo) |
-| `TWILIO_*` ou `EVOLUTION_*` | Configurações → Integrações → WhatsApp | Opcional |
+| `CLINT_API_KEY` e `CLINT_CHANNEL_ACCOUNT_ID` | Configurações → Integrações → WhatsApp | Opcional |
 
 ---
 
@@ -56,7 +56,7 @@ Após o 1º login do admin, o **AdminSetupWizard** abre automaticamente com **5 
 2. **Seu perfil**: avatar, telefone.
 3. **Webhook de conversão**: gere o `WEBHOOK_SECRET` (botão "Gerar aleatório").
 4. **E-mails (Resend)**: API key + remetente verificado.
-5. **WhatsApp** (opcional): escolha Twilio ou Evolution API e cole as credenciais. Pode pular.
+5. **WhatsApp** (opcional): cole a API Key da Clint e o ID da conta de canal (WhatsApp Oficial da Meta). Pode pular.
 
 Cada passo tem opção de pular — você configura depois em **Configurações → Integrações**.
 
@@ -77,8 +77,6 @@ URLs prontas (também aparecem no card "URLs úteis" da aba Integrações):
 | Provedor | URL |
 |---|---|
 | Resend (delivered/bounced/complained) | `https://<project>.supabase.co/functions/v1/resend-webhook` |
-| Twilio (status callback) | `https://<project>.supabase.co/functions/v1/twilio-status-webhook` |
-| Evolution API (status callback) | `https://<project>.supabase.co/functions/v1/evolution-status-webhook` |
 | Sistema externo (confirma conversão) | `https://<project>.supabase.co/functions/v1/conversion-webhook` |
 
 ### Exemplo: confirmar conversão

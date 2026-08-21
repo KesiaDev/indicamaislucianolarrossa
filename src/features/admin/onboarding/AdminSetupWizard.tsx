@@ -69,13 +69,9 @@ export function AdminSetupWizard({ open, onClose }: Props) {
   const [skipResend, setSkipResend] = useState(false);
 
   // Step 4: WhatsApp
-  const [waProvider, setWaProvider] = useState<"twilio" | "evolution">("twilio");
-  const [twilioSid, setTwilioSid] = useState("");
-  const [twilioToken, setTwilioToken] = useState("");
-  const [twilioFrom, setTwilioFrom] = useState("");
-  const [evolutionUrl, setEvolutionUrl] = useState("");
-  const [evolutionKey, setEvolutionKey] = useState("");
-  const [evolutionInstance, setEvolutionInstance] = useState("");
+  const [clintApiKey, setClintApiKey] = useState("");
+  const [clintChannelId, setClintChannelId] = useState("");
+
   const [showWaSecret, setShowWaSecret] = useState(false);
   const [skipWhatsapp, setSkipWhatsapp] = useState(true);
 
@@ -224,16 +220,10 @@ export function AdminSetupWizard({ open, onClose }: Props) {
           const { error } = await supabase.rpc("set_vault_secret" as any, { p_name: name, p_value: value });
           if (error) throw new Error(`WhatsApp (${name}): ${error.message}`);
         };
-        await setSecret("WHATSAPP_PROVIDER", waProvider);
-        if (waProvider === "twilio") {
-          if (twilioSid.trim()) await setSecret("TWILIO_ACCOUNT_SID", twilioSid.trim());
-          if (twilioToken.trim()) await setSecret("TWILIO_AUTH_TOKEN", twilioToken.trim());
-          if (twilioFrom.trim()) await setSecret("TWILIO_FROM", twilioFrom.trim());
-        } else {
-          if (evolutionUrl.trim()) await setSecret("EVOLUTION_API_URL", evolutionUrl.trim());
-          if (evolutionKey.trim()) await setSecret("EVOLUTION_API_KEY", evolutionKey.trim());
-          if (evolutionInstance.trim()) await setSecret("EVOLUTION_INSTANCE", evolutionInstance.trim());
-        }
+        await setSecret("WHATSAPP_PROVIDER", "clint");
+        if (clintApiKey.trim()) await setSecret("CLINT_API_KEY", clintApiKey.trim());
+        if (clintChannelId.trim()) await setSecret("CLINT_CHANNEL_ACCOUNT_ID", clintChannelId.trim());
+
       }
     },
     onSuccess: () => {
@@ -275,9 +265,8 @@ export function AdminSetupWizard({ open, onClose }: Props) {
     (resendKey.trim().length > 10 && /\S+@\S+\.\S+/.test(resendFrom.trim()));
   const canFinish =
     skipWhatsapp ||
-    (waProvider === "twilio"
-      ? twilioSid.trim().length > 0 && twilioToken.trim().length > 0 && twilioFrom.trim().length > 0
-      : evolutionUrl.trim().length > 0 && evolutionKey.trim().length > 0 && evolutionInstance.trim().length > 0);
+    (clintApiKey.trim().length > 0 && clintChannelId.trim().length > 0);
+
 
   const handleFinish = async () => {
     setErrorBanner(null);
@@ -525,84 +514,43 @@ export function AdminSetupWizard({ open, onClose }: Props) {
 
             {!skipWhatsapp && (
               <>
+                <p className="text-xs text-muted-foreground">
+                  Envio pela <span className="font-medium text-foreground">Clint</span> usando o WhatsApp Oficial da Meta.
+                </p>
                 <div className="space-y-1.5">
-                  <Label>Provedor</Label>
-                  <Select value={waProvider} onValueChange={(v) => setWaProvider(v as "twilio" | "evolution")}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="twilio">Twilio</SelectItem>
-                      <SelectItem value="evolution">Evolution API</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label htmlFor="sw-clint-key">API Key da Clint</Label>
+                  <div className="relative">
+                    <Input
+                      id="sw-clint-key"
+                      type={showWaSecret ? "text" : "password"}
+                      value={clintApiKey}
+                      onChange={(e) => setClintApiKey(e.target.value)}
+                      placeholder="clint_live_..."
+                      className="pr-10"
+                      autoComplete="off"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowWaSecret((v) => !v)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      tabIndex={-1}
+                    >
+                      {showWaSecret ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </div>
-
-                {waProvider === "twilio" ? (
-                  <>
-                    <div className="space-y-1.5">
-                      <Label htmlFor="sw-tw-sid">Account SID</Label>
-                      <Input id="sw-tw-sid" value={twilioSid} onChange={(e) => setTwilioSid(e.target.value)} placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label htmlFor="sw-tw-token">Auth Token</Label>
-                      <div className="relative">
-                        <Input
-                          id="sw-tw-token"
-                          type={showWaSecret ? "text" : "password"}
-                          value={twilioToken}
-                          onChange={(e) => setTwilioToken(e.target.value)}
-                          className="pr-10"
-                          autoComplete="off"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowWaSecret((v) => !v)}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                          tabIndex={-1}
-                        >
-                          {showWaSecret ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </button>
-                      </div>
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label htmlFor="sw-tw-from">Número From (whatsapp:+...)</Label>
-                      <Input id="sw-tw-from" value={twilioFrom} onChange={(e) => setTwilioFrom(e.target.value)} placeholder="whatsapp:+14155238886" />
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="space-y-1.5">
-                      <Label htmlFor="sw-ev-url">URL da Evolution API</Label>
-                      <Input id="sw-ev-url" value={evolutionUrl} onChange={(e) => setEvolutionUrl(e.target.value)} placeholder="https://evolution.seudominio.com" />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label htmlFor="sw-ev-key">API Key</Label>
-                      <div className="relative">
-                        <Input
-                          id="sw-ev-key"
-                          type={showWaSecret ? "text" : "password"}
-                          value={evolutionKey}
-                          onChange={(e) => setEvolutionKey(e.target.value)}
-                          className="pr-10"
-                          autoComplete="off"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowWaSecret((v) => !v)}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                          tabIndex={-1}
-                        >
-                          {showWaSecret ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </button>
-                      </div>
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label htmlFor="sw-ev-inst">Nome da instância</Label>
-                      <Input id="sw-ev-inst" value={evolutionInstance} onChange={(e) => setEvolutionInstance(e.target.value)} placeholder="minha-instancia" />
-                    </div>
-                  </>
-                )}
+                <div className="space-y-1.5">
+                  <Label htmlFor="sw-clint-channel">ID da conta de canal</Label>
+                  <Input
+                    id="sw-clint-channel"
+                    value={clintChannelId}
+                    onChange={(e) => setClintChannelId(e.target.value)}
+                    placeholder="550e8400-e29b-41d4-a716-446655440001"
+                  />
+                </div>
               </>
             )}
+
           </div>
         )}
 

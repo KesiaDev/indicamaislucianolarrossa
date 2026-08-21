@@ -32,7 +32,56 @@ function json(body: unknown, status = 200) {
   });
 }
 
-const GATEWAY_URL = "https://connector-gateway.lovable.dev";
+const CLINT_BASE = "https://api.clint.digital";
+
+// Separa E.164 em DDI + número local (Clint guarda os dois campos).
+function splitPhone(e164: string): { ddi: string; local: string } {
+  const digits = e164.replace(/^whatsapp:/, "").replace(/\D+/g, "");
+  if (digits.startsWith("55")) return { ddi: "55", local: digits.slice(2) };
+  if (digits.startsWith("351")) return { ddi: "351", local: digits.slice(3) };
+  if (digits.startsWith("1") && digits.length === 11) return { ddi: "1", local: digits.slice(1) };
+  return { ddi: digits.slice(0, 2), local: digits.slice(2) };
+}
+
+// Busca o contato na Clint pelo telefone; cria se não existir. Retorna o UUID.
+async function clintResolveContact(
+  apiKey: string,
+  ddi: string,
+  local: string,
+  name: string | null,
+  email: string | null,
+): Promise<string | null> {
+  const headers = { "Content-Type": "application/json", "api-token": apiKey };
+
+  const search = await fetch(
+    `${CLINT_BASE}/v1/contacts?ddi=${encodeURIComponent(ddi)}&phone=${encodeURIComponent(local)}&limit=1`,
+    { headers },
+  );
+  if (search.ok) {
+    const found = await search.json().catch(() => ({}));
+    const id = (found as any)?.data?.[0]?.id;
+    if (id) return id as string;
+  } else {
+    console.error("clint contact search failed", search.status, await search.text());
+  }
+
+  const create = await fetch(`${CLINT_BASE}/v1/contacts`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      name: name || `+${ddi}${local}`,
+      ddi,
+      phone: local,
+      ...(email ? { email } : {}),
+    }),
+  });
+  const created = await create.json().catch(() => ({}));
+  if (!create.ok) {
+    throw new Error((created as any)?.message || `clint_contact_${create.status}`);
+  }
+  return ((created as any)?.id ?? (created as any)?.data?.id ?? null) as string | null;
+}
+
 
 // --- E.164 normalization (BR-aware) ---
 function toE164(phone: string | null | undefined): string | null {
@@ -262,7 +311,7 @@ Deno.serve(async (req) => {
         else providerMessageId = (respJson as any)?.id ?? null;
       }
     } else {
-      // WhatsApp
+      // WhatsApp via Clint (API Oficial da Meta)
       const rawPhone = (parsed.data.override_phone ?? (profile as any).phone) as string | null;
       const phone = toE164(rawPhone);
       if (!rawPhone) {
@@ -270,60 +319,53 @@ Deno.serve(async (req) => {
       } else if (!phone) {
         errorMessage = "invalid_phone";
       } else {
-        const provider = (await vaultGet("WHATSAPP_PROVIDER")) ?? "";
         const text = isEvent
           ? resolvedBody
           : (body ?? "Atualização do seu programa de indicações.");
         logBody = text;
 
-        if (provider === "twilio") {
-          const sid = await vaultGet("TWILIO_ACCOUNT_SID");
-          const tokenT = await vaultGet("TWILIO_AUTH_TOKEN");
-          const from = await vaultGet("TWILIO_FROM");
-          const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-          if (!sid || !tokenT || !from || !LOVABLE_API_KEY) {
-            errorMessage = "twilio_not_configured";
-          } else {
-            const form = new URLSearchParams();
-            form.set("To", phone.startsWith("whatsapp:") ? phone : `whatsapp:${phone}`);
-            form.set("From", from);
-            form.set("Body", text);
-            const res = await fetch(`${GATEWAY_URL}/twilio/2010-04-01/Accounts/${sid}/Messages.json`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                Authorization: `Bearer ${LOVABLE_API_KEY}`,
-                "X-Connection-Api-Key": tokenT,
-                "X-Connection-Account-Sid": sid,
-              },
-              body: form.toString(),
-            });
-            const respJson = await res.json().catch(() => ({}));
-            if (!res.ok) errorMessage = (respJson as any)?.message || `twilio_${res.status}`;
-            else providerMessageId = (respJson as any)?.sid ?? null;
-          }
-        } else if (provider === "evolution") {
-          const url = await vaultGet("EVOLUTION_API_URL");
-          const key = await vaultGet("EVOLUTION_API_KEY");
-          const instance = await vaultGet("EVOLUTION_INSTANCE");
-          if (!url || !key || !instance) {
-            errorMessage = "evolution_not_configured";
-          } else {
-            const evolutionNumber = phone.replace(/^whatsapp:/, "").replace(/^\+/, "");
-            const res = await fetch(`${url.replace(/\/$/, "")}/message/sendText/${instance}`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json", apikey: key },
-              body: JSON.stringify({ number: evolutionNumber, text }),
-            });
-            const respJson = await res.json().catch(() => ({}));
-            if (!res.ok) errorMessage = (respJson as any)?.message || `evolution_${res.status}`;
-            else providerMessageId = (respJson as any)?.key?.id ?? null;
-          }
+        const apiKey = await vaultGet("CLINT_API_KEY");
+        const channelAccountId = await vaultGet("CLINT_CHANNEL_ACCOUNT_ID");
+        if (!apiKey || !channelAccountId) {
+          errorMessage = "clint_not_configured";
         } else {
-          errorMessage = "whatsapp_provider_not_set";
+          try {
+            const { ddi, local } = splitPhone(phone);
+            const contactId = await clintResolveContact(
+              apiKey,
+              ddi,
+              local,
+              ((profile as any).full_name as string | null) ?? null,
+              ((profile as any).email as string | null) ?? null,
+            );
+            if (!contactId) {
+              errorMessage = "clint_contact_not_created";
+            } else {
+              const res = await fetch(`${CLINT_BASE}/v2/messages/text`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "api-token": apiKey },
+                body: JSON.stringify({
+                  channel_account_id: channelAccountId,
+                  contact_id: contactId,
+                  message: text,
+                }),
+              });
+              const respJson = await res.json().catch(() => ({}));
+              if (!res.ok) {
+                console.error("clint send failed", res.status, JSON.stringify(respJson));
+                errorMessage = (respJson as any)?.message || `clint_${res.status}`;
+              } else {
+                providerMessageId = (respJson as any)?.data?.message_id ?? null;
+              }
+            }
+          } catch (err) {
+            console.error("clint error", err);
+            errorMessage = (err as Error).message;
+          }
         }
       }
     }
+
 
     const { data: logRow, error: logError } = await supabase
       .from("notifications_log")
