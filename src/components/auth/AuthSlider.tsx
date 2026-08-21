@@ -249,7 +249,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
         <div className="auth-bg-embers" />
       </div>
 
-      <div className="relative z-10 flex flex-col items-center gap-3 mb-7 text-center">
+      <div className="auth-header relative z-10 flex flex-col items-center gap-3 mb-7 text-center">
         {logo ? (
           <img
             src={logo}
@@ -264,7 +264,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
         <h1 className="auth-title text-2xl font-bold uppercase tracking-[0.22em]">
           {companyName}
         </h1>
-        <p className="text-xs uppercase tracking-[0.3em] text-[hsl(var(--muted-foreground))]">
+        <p className="auth-subtitle text-xs uppercase tracking-[0.3em]">
           Programa de Indicações · Luciano Larrossa
         </p>
       </div>
@@ -301,26 +301,26 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           top: 0;
           right: 0;
           height: 100%;
-          width: min(72%, 1100px);
+          width: min(80%, 1250px);
           object-fit: cover;
-          object-position: 70% 22%;
-          filter: contrast(1.15) brightness(0.95) sepia(0.2) saturate(1.25);
+          object-position: 70% 12%;
+          filter: contrast(1.35) brightness(1.08) saturate(1.12);
           opacity: 1;
-          -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 52%, #000 100%),
-                              linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+          -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 46%, #000 100%),
+                              linear-gradient(180deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
           -webkit-mask-composite: source-in;
-          mask-image: linear-gradient(90deg, transparent 0%, #000 52%, #000 100%),
-                      linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0%, #000 46%, #000 100%),
+                      linear-gradient(180deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
           mask-composite: intersect;
         }
         .auth-bg-veil {
           position: absolute;
           inset: 0;
           background:
-            radial-gradient(70% 80% at 86% 40%, hsl(32 90% 55% / 0.06) 0%, transparent 55%),
-            radial-gradient(60% 55% at 20% 40%, hsl(32 95% 55% / 0.10) 0%, transparent 70%),
-            linear-gradient(90deg, hsl(20 25% 3% / 0.92) 0%, hsl(20 25% 3% / 0.55) 42%, hsl(20 22% 3% / 0.22) 62%, hsl(20 20% 2% / 0.35) 100%),
-            linear-gradient(180deg, hsl(20 25% 3% / 0.45) 0%, transparent 28%, transparent 72%, hsl(20 20% 2% / 0.92) 100%);
+            radial-gradient(70% 80% at 88% 35%, hsl(32 90% 55% / 0.08) 0%, transparent 55%),
+            radial-gradient(60% 55% at 18% 40%, hsl(32 95% 55% / 0.12) 0%, transparent 70%),
+            linear-gradient(90deg, hsl(20 25% 3% / 0.94) 0%, hsl(20 25% 3% / 0.60) 40%, hsl(20 22% 3% / 0.18) 60%, hsl(20 20% 2% / 0.30) 100%),
+            linear-gradient(180deg, hsl(20 25% 3% / 0.55) 0%, transparent 26%, transparent 74%, hsl(20 20% 2% / 0.94) 100%);
         }
 
 
@@ -349,11 +349,25 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           color: hsl(24 40% 8%);
           box-shadow: 0 10px 30px hsl(32 90% 50% / 0.35);
         }
+        .auth-header {
+          padding: 18px 32px 24px;
+          border-radius: 20px;
+          background:
+            radial-gradient(120% 100% at 50% 0%, hsl(20 20% 3% / 0.45) 0%, transparent 70%),
+            linear-gradient(180deg, hsl(20 20% 3% / 0.28) 0%, transparent 100%);
+          -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 70%, transparent 100%);
+          mask-image: linear-gradient(180deg, #000 0%, #000 70%, transparent 100%);
+        }
         .auth-title {
-          background: linear-gradient(180deg, hsl(46 96% 78%), hsl(32 85% 52%));
+          background: linear-gradient(180deg, hsl(46 96% 84%), hsl(32 85% 54%));
           -webkit-background-clip: text;
           background-clip: text;
           color: transparent;
+          text-shadow: 0 2px 20px hsl(20 20% 2% / 0.75), 0 1px 4px hsl(20 20% 2% / 0.5);
+        }
+        .auth-subtitle {
+          color: hsl(38 20% 78%);
+          text-shadow: 0 1px 12px hsl(20 20% 2% / 0.8), 0 1px 3px hsl(20 20% 2% / 0.5);
         }
         .auth-container {
           position: relative;
