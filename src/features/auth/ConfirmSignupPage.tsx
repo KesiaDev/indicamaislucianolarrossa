@@ -90,7 +90,7 @@ export default function ConfirmSignupPage() {
     });
     setBusy(false);
     if (signErr) {
-      toast.success("Cadastro confirmado!", { description: "Faça login para continuar." });
+      toast.success("Registo confirmado!", { description: "Faça login para continuar." });
       navigate("/login", { replace: true });
       return;
     }
@@ -125,7 +125,7 @@ export default function ConfirmSignupPage() {
               <h2 className="text-xl font-semibold">Não foi possível confirmar</h2>
               <p className="text-sm text-muted-foreground">{state.message}</p>
               <Link to="/quero-indicar" className="inline-block text-sm text-primary hover:underline">
-                Fazer um novo cadastro
+                Fazer um novo registo
               </Link>
             </div>
           )}

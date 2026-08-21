@@ -87,7 +87,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
   const [regErr, setRegErr] = useState<string | null>(null);
   const [regSuccess, setRegSuccess] = useState(false);
 
-  // Detecta projeto vazio (1º cadastro vira admin)
+  // Detecta projeto vazio (1º registo vira admin)
   const [isFirstUser, setIsFirstUser] = useState(false);
   useEffect(() => {
     let active = true;
@@ -118,7 +118,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
         .maybeSingle();
       if (!data) {
         await supabase.auth.signOut();
-        toast.error("Cadastro não encontrado", {
+        toast.error("Registo não encontrado", {
           description:
             "Para participar do programa, faça sua inscrição em 'Quero ser indicador'.",
         });
@@ -193,13 +193,13 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
       if (errCode || fnErr) {
         const map: Record<string, string> = {
           email_already_registered:
-            "Este e-mail já está cadastrado. Faça login.",
+            "Este e-mail já está registado. Faça login.",
           resend_not_configured:
             "Envio de e-mail não está configurado. Avise o administrador.",
           email_send_failed:
             "Não foi possível enviar o e-mail de confirmação. Tente novamente em instantes.",
-          insert_failed: "Erro ao registrar seu cadastro. Tente novamente.",
-          update_failed: "Erro ao atualizar seu cadastro. Tente novamente.",
+          insert_failed: "Erro ao registar seu registo. Tente novamente.",
+          update_failed: "Erro ao atualizar seu registo. Tente novamente.",
           invalid_body: "Dados inválidos. Confira os campos.",
           password_required_for_bootstrap:
             "Defina uma senha para criar a conta de administrador.",
@@ -285,7 +285,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
               mode === "register" ? "active" : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            Cadastrar
+            Registar
           </button>
         </div>
 
@@ -379,7 +379,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
               <p className="text-sm text-muted-foreground">
                 Enviamos um link de confirmação para{" "}
                 <strong>{regForm.email}</strong>. Clique nele para concluir seu
-                cadastro (válido por 24 horas).
+                registo (válido por 24 horas).
               </p>
               <button
                 type="button"
@@ -394,7 +394,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
             </div>
           ) : (
             <form onSubmit={doRegister} className="w-full space-y-4">
-              <h2 className="text-xl font-bold mb-1">Cadastro</h2>
+              <h2 className="text-xl font-bold mb-1">Registo</h2>
 
               {regErr && (
                 <div className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
@@ -470,7 +470,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
 
               <p className="text-xs text-muted-foreground">
                 {isFirstUser
-                  ? "Como primeiro cadastro, você se torna o administrador da plataforma."
+                  ? "Como primeiro registo, você se torna o administrador da plataforma."
                   : "Você receberá um e-mail para confirmar e definir sua senha."}
               </p>
             </form>

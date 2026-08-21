@@ -431,7 +431,7 @@ export function AdminSetupWizard({ open, onClose }: Props) {
 
             <label className="flex items-center gap-2 text-sm text-muted-foreground">
               <input type="checkbox" checked={skipWebhook} onChange={(e) => setSkipWebhook(e.target.checked)} />
-              Pular por enquanto — configuro depois em Configurações → Integrações.
+              Ignorar por agora — configuro depois em Definições → Integrações.
             </label>
           </div>
         )}
@@ -492,7 +492,7 @@ export function AdminSetupWizard({ open, onClose }: Props) {
 
             <label className="flex items-center gap-2 text-sm text-muted-foreground">
               <input type="checkbox" checked={skipResend} onChange={(e) => setSkipResend(e.target.checked)} />
-              Pular por enquanto — configuro depois em Configurações → Integrações.
+              Ignorar por agora — configuro depois em Definições → Integrações.
             </label>
           </div>
         )}
@@ -503,13 +503,13 @@ export function AdminSetupWizard({ open, onClose }: Props) {
               <MessageCircle className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">
                 Configure o WhatsApp para enviar notificações por mensagem. Você pode pular e
-                configurar depois em <strong>Configurações → Integrações</strong>.
+                configurar depois em <strong>Definições → Integrações</strong>.
               </p>
             </div>
 
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" checked={skipWhatsapp} onChange={(e) => setSkipWhatsapp(e.target.checked)} />
-              Pular WhatsApp por enquanto
+              Ignorar WhatsApp por enquanto
             </label>
 
             {!skipWhatsapp && (

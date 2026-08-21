@@ -91,7 +91,7 @@ export function TiersTab() {
           ))
         ) : tiers.length === 0 ? (
           <div className="text-center py-12 text-sm text-muted-foreground border rounded-lg">
-            Nenhum tier cadastrado. Crie o primeiro nível para começar.
+            Nenhum tier registado. Crie o primeiro nível para começar.
           </div>
         ) : (
           tiers.map((t, i) => (

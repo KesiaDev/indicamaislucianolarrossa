@@ -8,7 +8,7 @@ function prefersReducedMotion(): boolean {
 type CelebrateKind = "reward" | "tier" | "firstConversion" | "share";
 
 /**
- * Dispara confetti contextual. No-op se o usuário pediu reduced motion.
+ * Dispara confetti contextual. No-op se o utilizador pediu reduced motion.
  */
 export function celebrate(kind: CelebrateKind = "reward", tierColor?: string) {
   if (prefersReducedMotion()) return;

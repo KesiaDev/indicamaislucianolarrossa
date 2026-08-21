@@ -7,7 +7,7 @@ import { NotificationsTab } from "./NotificationsTab";
 export default function SettingsPage() {
   return (
     <>
-      <h2 className="text-2xl font-semibold mb-6">Configurações</h2>
+      <h2 className="text-2xl font-semibold mb-6">Definições</h2>
       <Tabs defaultValue="branding">
         <TabsList>
           <TabsTrigger value="branding">Marca</TabsTrigger>

@@ -129,12 +129,12 @@ export default function ReferralRedirect() {
       if (data && (data as any).ok === false) {
         toast.error(`Erro: ${(data as any).error ?? "tente novamente"}`);
       } else {
-        toast.success("Indicação registrada! 🚀");
+        toast.success("Indicação registada! 🚀");
       }
       setDialogOpen(false);
       reset();
     } catch (err: any) {
-      toast.error(err?.message || "Erro ao registrar");
+      toast.error(err?.message || "Erro ao registar");
       setDialogOpen(false);
     } finally {
       setSubmitting(false);
@@ -208,7 +208,7 @@ export default function ReferralRedirect() {
               </div>
               <DialogFooter className="gap-2 sm:gap-2">
                 <Button type="button" variant="ghost" onClick={() => setDialogOpen(false)} disabled={submitting}>
-                  Pular e continuar
+                  Ignorar e continuar
                 </Button>
                 <Button type="submit" disabled={submitting}>
                   {submitting ? "Enviando..." : "Enviar e continuar"}

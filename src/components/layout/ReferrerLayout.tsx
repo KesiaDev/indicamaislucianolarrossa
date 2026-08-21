@@ -93,7 +93,7 @@ export function ReferrerLayout() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          aria-label="Abrir menu do usuário"
+          aria-label="Abrir menu do utilizador"
           className="group flex items-center gap-3 min-w-0 rounded-xl px-2 py-1 transition-colors hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         >
           <Avatar

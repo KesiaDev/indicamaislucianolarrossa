@@ -158,7 +158,7 @@ export default function CampaignDetailPage() {
             <AlertDialogTitle>Avisar todos os indicadores?</AlertDialogTitle>
             <AlertDialogDescription>
               Será enviada uma notificação por e-mail e WhatsApp (conforme as regras configuradas)
-              para cada indicador cadastrado, divulgando a campanha "{campaign.name}".
+              para cada indicador registado, divulgando a campanha "{campaign.name}".
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

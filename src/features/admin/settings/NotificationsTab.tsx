@@ -47,8 +47,8 @@ const EVENTS: EventDef[] = [
   },
   {
     key: "referral_registered",
-    label: "Indicação registrada",
-    description: "Disparado quando um lead se cadastra via link de indicação.",
+    label: "Indicação registada",
+    description: "Disparado quando um lead se regista via link de indicação.",
     channels: ["email", "whatsapp"],
     placeholders: [
       "{{referrer_first_name}}",

@@ -34,14 +34,14 @@ Deno.serve(async (req) => {
     if (!resendKey || !resendFrom) {
       return json({
         error: "resend_not_configured",
-        message: "Configure Resend (API key e remetente) em Configurações → Integrações antes de enviar convites.",
+        message: "Configure Resend (API key e remetente) em Definições → Integrações antes de enviar convites.",
         missing: { resend_api_key: !resendKey, resend_from: !resendFrom },
       }, 400);
     }
 
     const origin = req.headers.get("origin") || Deno.env.get("SUPABASE_URL")!;
 
-    // 2) Cria o usuário (ou recupera se já existir) com signup_kind=referrer para
+    // 2) Cria o utilizador (ou recupera se já existir) com signup_kind=referrer para
     //    o trigger handle_new_user não promover a admin.
     let userId: string | null = null;
     const { data: created, error: createErr } = await auth.admin.auth.admin.createUser({
