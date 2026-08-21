@@ -310,25 +310,17 @@ function ResendCard({ status, onChanged }: { status: Status; onChanged: () => vo
 
 function WhatsappCard({ status, onChanged }: { status: Status; onChanged: () => void }) {
   const { profile } = useAuth();
-  const currentProvider = (status.whatsapp_provider_value as string | null) || null;
-  const connected =
-    !!currentProvider &&
-    ((currentProvider === "twilio" && status.TWILIO_ACCOUNT_SID && status.TWILIO_AUTH_TOKEN && status.TWILIO_FROM) ||
-      (currentProvider === "evolution" && status.EVOLUTION_API_URL && status.EVOLUTION_API_KEY && status.EVOLUTION_INSTANCE));
+  const connected = !!status.CLINT_API_KEY && !!status.CLINT_CHANNEL_ACCOUNT_ID;
 
   const [open, setOpen] = useState(false);
   const [removeOpen, setRemoveOpen] = useState(false);
   const [testOpen, setTestOpen] = useState(false);
   const [testTo, setTestTo] = useState("");
   const [testing, setTesting] = useState(false);
-  const [provider, setProvider] = useState<"twilio" | "evolution">((currentProvider as any) ?? "twilio");
   const [vals, setVals] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    if (currentProvider) setProvider(currentProvider as any);
-  }, [currentProvider]);
-
   const onChange = (k: string, v: string) => setVals((s) => ({ ...s, [k]: v }));
+
 
   const save = useMutation({
     mutationFn: async () => {
