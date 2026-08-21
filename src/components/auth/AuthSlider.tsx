@@ -304,7 +304,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           width: min(78%, 1200px);
           object-fit: cover;
           object-position: 72% 18%;
-          filter: contrast(1.22) brightness(1.02) saturate(1.05) sharpness(1.1);
+          filter: contrast(1.28) brightness(1.05) saturate(1.08);
           opacity: 0.95;
           -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 48%, #000 100%),
                               linear-gradient(180deg, transparent 0%, #000 10%, #000 88%, transparent 100%);
