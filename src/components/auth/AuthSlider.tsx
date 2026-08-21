@@ -253,7 +253,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
       <div className="auth-header relative z-10 flex flex-col items-center gap-4 mb-8 text-center">
         <div className="auth-logo-ring relative">
           <img
-            src={lucianoLogo.url}
+            src={lucianoLogo}
             alt={companyName}
             className="auth-logo-img h-20 w-20 object-contain drop-shadow-[0_8px_30px_rgba(0,0,0,0.85)]"
           />
