@@ -350,6 +350,16 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           color: hsl(24 40% 8%);
           box-shadow: 0 10px 30px hsl(32 90% 50% / 0.35);
         }
+        .auth-logo-ring {
+          padding: 5px;
+          border-radius: 50%;
+          background: conic-gradient(from 0deg, hsl(44 92% 62%), hsl(32 88% 48%), hsl(44 92% 62%));
+          box-shadow: 0 10px 35px hsl(32 90% 50% / 0.35), inset 0 0 20px hsl(32 90% 50% / 0.15);
+        }
+        .auth-logo-img {
+          border-radius: 50%;
+          background: hsl(20 20% 5%);
+        }
         .auth-header {
           padding: 22px 44px 26px;
           border-radius: 24px;
