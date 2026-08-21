@@ -480,8 +480,8 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           .auth-container {
             width: 100%;
             height: calc(100vh - 160px);
-            min-height: 620px;
-            border-radius: 24px;
+            min-height: 560px;
+            border-radius: 20px;
           }
           .auth-form-box {
             bottom: 0;
