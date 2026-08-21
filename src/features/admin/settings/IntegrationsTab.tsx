@@ -465,18 +465,15 @@ function WhatsappCard({ status, onChanged }: { status: Status; onChanged: () => 
                 </div>
               );
             })}
-            {provider === "evolution" && (
-              <div className="rounded-md border bg-muted/30 p-3 text-xs space-y-1">
-                <p className="font-medium text-foreground">Webhook de status (opcional)</p>
-                <p className="text-muted-foreground">
-                  Configure no painel do Evolution para receber confirmações de entrega/leitura.
-                  Use o header <code className="font-mono">apikey</code> com a mesma API Key acima.
-                </p>
-                <code className="block break-all rounded bg-background p-2 font-mono">
-                  https://{import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/evolution-status-webhook
-                </code>
-              </div>
-            )}
+            <div className="rounded-md border bg-muted/30 p-3 text-xs space-y-1">
+              <p className="font-medium text-foreground">Onde encontrar</p>
+              <p className="text-muted-foreground">
+                A API Key fica em Configurações → API na Clint. O ID da conta de canal é o
+                <code className="mx-1 font-mono">id</code> retornado em
+                <code className="mx-1 font-mono">/v2/channel-accounts</code> para o número de WhatsApp Oficial desejado.
+              </p>
+            </div>
+
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
@@ -492,7 +489,7 @@ function WhatsappCard({ status, onChanged }: { status: Status; onChanged: () => 
           <DialogHeader>
             <DialogTitle>Enviar WhatsApp de teste</DialogTitle>
             <DialogDescription>
-              Use formato internacional. A mensagem será enviada via {currentProvider}.
+              Use formato internacional. A mensagem será enviada via Clint.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-1.5">
