@@ -576,7 +576,9 @@ function WhatsappCard({ status, onChanged }: { status: Status; onChanged: () => 
         <p className="text-sm text-muted-foreground">
           Notificações via WhatsApp para indicadores quando prêmios são liberados.
         </p>
+        <ClintNumbersPanel apiKeyConfigured={!!status.CLINT_API_KEY} />
       </IntegrationCard>
+
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg">
