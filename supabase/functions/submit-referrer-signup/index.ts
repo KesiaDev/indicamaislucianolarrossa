@@ -87,6 +87,54 @@ Deno.serve(async (req) => {
       return json({ error: "email_already_registered" }, 409);
     }
 
+    // ===== Registo de aluno com palavra-passe: cria a conta imediatamente =====
+    if (password && password.length >= 6) {
+      const { data: created, error: cuErr } = await supabase.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+        user_metadata: { full_name, signup_kind: "referrer" },
+      });
+      if (cuErr || !created.user) {
+        const msg = cuErr?.message ?? "";
+        if (/already/i.test(msg)) return json({ error: "email_already_registered" }, 409);
+        return json({ error: "create_user_failed", details: msg }, 400);
+      }
+      const userId = created.user.id;
+
+      await supabase.from("profiles").upsert({
+        id: userId,
+        role: "referrer",
+        email,
+        full_name,
+        phone: phone ?? null,
+      }, { onConflict: "id" });
+
+      await supabase
+        .from("referrer_signups")
+        .update({
+          status: "confirmed",
+          confirmed_at: new Date().toISOString(),
+          created_user_id: userId,
+        })
+        .ilike("email", email)
+        .eq("status", "awaiting_confirmation");
+
+      // Boas-vindas (best-effort — nunca bloqueia o registo)
+      try {
+        await notifyEvent({
+          event_key: "referrer_welcome",
+          profile_id: userId,
+          data: { full_name, app_url: appUrl },
+        });
+      } catch (e) {
+        console.warn("welcome notify failed", e);
+      }
+
+      return json({ ok: true, account_created: true, user_id: userId });
+    }
+
+
     // Existe pendente? Se sim, regenera token e reenvia.
     const { data: pending } = await supabase
       .from("referrer_signups")

@@ -163,17 +163,15 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
       setRegErr(parsed.error.issues[0]?.message ?? "Dados inválidos");
       return;
     }
-    if (isFirstUser) {
-      try {
-        passSchema.parse(regForm.password);
-      } catch (err) {
-        const m =
-          err instanceof z.ZodError
-            ? err.issues[0]?.message
-            : "Senha inválida";
-        setRegErr(m || "Senha inválida");
-        return;
-      }
+    try {
+      passSchema.parse(regForm.password);
+    } catch (err) {
+      const m =
+        err instanceof z.ZodError
+          ? err.issues[0]?.message
+          : "Senha inválida";
+      setRegErr(m || "Senha inválida");
+      return;
     }
     setRegBusy(true);
     try {
@@ -185,7 +183,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
             email: parsed.data.email,
             phone: parsed.data.phone || null,
             app_url: window.location.origin,
-            ...(isFirstUser ? { password: regForm.password } : {}),
+            password: regForm.password,
           },
         },
       );
@@ -201,18 +199,20 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           insert_failed: "Erro ao registar seu registo. Tente novamente.",
           update_failed: "Erro ao atualizar seu registo. Tente novamente.",
           invalid_body: "Dados inválidos. Confira os campos.",
+          create_user_failed:
+            "Não foi possível criar a conta. Verifique os dados e tente novamente.",
           password_required_for_bootstrap:
-            "Defina uma senha para criar a conta de administrador.",
+            "Defina uma palavra-passe para criar a conta.",
           bootstrap_failed:
-            "Não foi possível criar a conta de administrador. Tente novamente.",
+            "Não foi possível criar a conta. Tente novamente.",
         };
         setRegErr(
           map[errCode ?? ""] ?? errCode ?? fnErr?.message ?? "Erro ao enviar.",
         );
         return;
       }
-      // Bootstrap do 1º admin: faz login automático
-      if ((data as any)?.bootstrap_admin) {
+      // Conta criada (aluno ou 1º admin): faz login automático
+      if ((data as any)?.account_created || (data as any)?.bootstrap_admin) {
         const { error: signErr } = await supabase.auth.signInWithPassword({
           email: parsed.data.email,
           password: regForm.password,
@@ -224,10 +224,11 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           setMode("login");
           return;
         }
-        toast.success("Bem-vindo, administrador!");
+        toast.success("Conta criada. Bem-vindo(a)!");
         return;
       }
       setRegSuccess(true);
+
     } catch (err) {
       setRegErr((err as Error).message);
     } finally {
@@ -427,46 +428,41 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
                 onChange={(v) => setRegForm({ ...regForm, phone: v })}
               />
 
-              {isFirstUser && (
-                <div className="relative">
-                  <input
-                    type={showRegPass ? "text" : "password"}
-                    placeholder="Senha (mín. 6 caracteres)"
-                    autoComplete="new-password"
-                    value={regForm.password}
-                    onChange={(e) =>
-                      setRegForm({ ...regForm, password: e.target.value })
-                    }
-                    className="w-full px-[15px] pr-11 py-[11px] bg-muted rounded-md border border-input outline-none text-sm transition-colors focus:border-primary focus:bg-card placeholder:text-muted-foreground"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowRegPass((v) => !v)}
-                    aria-label={
-                      showRegPass ? "Ocultar senha" : "Mostrar senha"
-                    }
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  >
-                    {showRegPass ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-              )}
+              <div className="relative">
+                <input
+                  type={showRegPass ? "text" : "password"}
+                  placeholder="Palavra-passe (mín. 6 caracteres)"
+                  autoComplete="new-password"
+                  value={regForm.password}
+                  onChange={(e) =>
+                    setRegForm({ ...regForm, password: e.target.value })
+                  }
+                  className="w-full px-[15px] pr-11 py-[11px] bg-muted rounded-md border border-input outline-none text-sm transition-colors focus:border-primary focus:bg-card placeholder:text-muted-foreground"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowRegPass((v) => !v)}
+                  aria-label={
+                    showRegPass ? "Ocultar palavra-passe" : "Mostrar palavra-passe"
+                  }
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showRegPass ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
 
               <button
                 type="submit"
                 disabled={regBusy}
                 className="w-full h-11 rounded-md bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition disabled:opacity-60"
               >
-                {regBusy
-                  ? "A enviar…"
-                  : isFirstUser
-                    ? "Criar conta do aluno"
-                    : "Enviar confirmação"}
+                {regBusy ? "A criar conta…" : "Criar conta do aluno"}
               </button>
+
 
               <p className="text-xs text-muted-foreground">
                 Cria a tua conta de aluno para participar no programa de
