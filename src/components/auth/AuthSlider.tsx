@@ -427,6 +427,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           position: absolute;
           width: 100%;
           height: 100%;
+          pointer-events: none;
         }
         .auth-toggle-box::before {
           content: '';
@@ -434,12 +435,13 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           left: -250%;
           width: 300%;
           height: 100%;
-          background: linear-gradient(135deg, hsl(44 92% 60%) 0%, hsl(32 88% 48%) 45%, hsl(22 70% 26%) 100%);
-          box-shadow: inset 0 0 80px hsl(20 60% 10% / 0.45);
-
+          background: hsl(24 14% 10% / 0.55);
+          border: 1px solid hsl(38 60% 55% / 0.18);
+          box-shadow: inset 0 0 60px hsl(20 60% 10% / 0.35);
           border-radius: 150px;
           z-index: 2;
           transition: 1.8s ease-in-out;
+          backdrop-filter: blur(8px);
         }
         .auth-container.active .auth-toggle-box::before {
           left: 50%;
@@ -448,7 +450,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           position: absolute;
           width: 50%;
           height: 100%;
-          color: hsl(var(--primary-foreground));
+          color: hsl(40 32% 96%);
           display: flex;
           flex-direction: column;
           justify-content: center;
