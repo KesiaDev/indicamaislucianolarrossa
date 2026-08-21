@@ -714,28 +714,28 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
         {/* Toggle Box */}
         <div className="auth-toggle-box">
           <div className="auth-toggle-panel left">
-            <h2 className="text-3xl font-bold mb-2">Olá, bem-vindo!</h2>
-            <p className="text-sm opacity-90 mb-5">
-              Ainda não tem cadastro como indicador?
+            <h2 className="text-xl font-semibold mb-1">Novo por aqui?</h2>
+            <p className="text-xs opacity-80 mb-4">
+              Crie sua conta e comece a indicar.
             </p>
             <button
               type="button"
               onClick={() => setIsActive(true)}
               aria-pressed={isActive}
-              className="w-40 h-11 rounded-md border-2 border-primary-foreground text-primary-foreground text-sm font-semibold hover:bg-primary-foreground/10 transition"
+              className="px-5 h-9 rounded-full border border-primary-foreground/60 text-primary-foreground text-xs font-medium hover:bg-primary-foreground/10 transition"
             >
               Quero me cadastrar
             </button>
           </div>
 
           <div className="auth-toggle-panel right">
-            <h2 className="text-3xl font-bold mb-2">Bem-vindo de volta!</h2>
-            <p className="text-sm opacity-90 mb-5">Já tem uma conta?</p>
+            <h2 className="text-xl font-semibold mb-1">Já tem conta?</h2>
+            <p className="text-xs opacity-80 mb-4">Acesse sua área.</p>
             <button
               type="button"
               onClick={() => setIsActive(false)}
               aria-pressed={!isActive}
-              className="w-40 h-11 rounded-md border-2 border-primary-foreground text-primary-foreground text-sm font-semibold hover:bg-primary-foreground/10 transition"
+              className="px-5 h-9 rounded-full border border-primary-foreground/60 text-primary-foreground text-xs font-medium hover:bg-primary-foreground/10 transition"
             >
               Entrar
             </button>
