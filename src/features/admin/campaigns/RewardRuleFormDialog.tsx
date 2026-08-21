@@ -57,7 +57,7 @@ export function RewardRuleFormDialog({ open, onOpenChange, campaignId, onSaved }
 
   const rewardType = form.watch("reward_type");
   const showValue = rewardType === "cash" || rewardType === "discount";
-  const valueSuffix = rewardType === "cash" ? "R$" : rewardType === "discount" ? "%" : "";
+  const valueSuffix = rewardType === "cash" ? "€" : rewardType === "discount" ? "%" : "";
 
   const onSubmit = async (values: FormValues) => {
     setSubmitting(true);

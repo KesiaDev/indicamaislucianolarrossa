@@ -122,7 +122,7 @@ export function RewardCard({
                 </p>
                 {value != null && (
                   <p className="text-xs text-muted-foreground font-medium">
-                    Valor: R$ {Number(value).toFixed(2)}
+                    Valor: {formatEUR(value as number)}
                   </p>
                 )}
               </div>

@@ -39,8 +39,8 @@ export function TierRow({ tier, nextMinPoints, indicatorsCount, onEdit }: Props)
 
   const range =
     nextMinPoints === null
-      ? `${tier.min_points.toLocaleString("pt-BR")}+ pts`
-      : `${tier.min_points.toLocaleString("pt-BR")} – ${(nextMinPoints - 1).toLocaleString("pt-BR")} pts`;
+      ? `${tier.min_points.toLocaleString("pt-PT")}+ pts`
+      : `${tier.min_points.toLocaleString("pt-PT")} – ${(nextMinPoints - 1).toLocaleString("pt-PT")} pts`;
 
   const perksCount = tier.perks?.length ?? 0;
   const canDelete = indicatorsCount === 0;

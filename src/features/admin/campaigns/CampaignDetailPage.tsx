@@ -554,7 +554,7 @@ function ReferralsTab({ campaignId }: { campaignId: string }) {
                   <TableCell className="text-xs">{formatBRT(r.created_at)}</TableCell>
                   <TableCell className="text-xs">{formatBRT(r.converted_at)}</TableCell>
                   <TableCell className="text-right">
-                    {r.conversion_value != null ? `R$ ${Number(r.conversion_value).toFixed(2)}` : "—"}
+                    {r.conversion_value != null ? formatEUR(r.conversion_value) : "—"}
                   </TableCell>
                 </TableRow>
               ))}

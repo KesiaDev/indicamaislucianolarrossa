@@ -1,12 +1,12 @@
 import { formatInTimeZone, toZonedTime } from "date-fns-tz";
 
-export const SP_TZ = "America/Sao_Paulo";
+export const SP_TZ = "Europe/Lisbon";
 
 export function formatBRT(value: string | Date | null | undefined, opts?: Intl.DateTimeFormatOptions): string {
   if (!value) return "—";
   const d = typeof value === "string" ? new Date(value) : value;
   if (isNaN(d.getTime())) return "—";
-  return new Intl.DateTimeFormat("pt-BR", {
+  return new Intl.DateTimeFormat("pt-PT", {
     timeZone: SP_TZ,
     day: "2-digit",
     month: "2-digit",
