@@ -249,7 +249,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
         <div className="auth-bg-embers" />
       </div>
 
-      <div className="relative z-10 flex flex-col items-center gap-3 mb-7 text-center">
+      <div className="auth-header relative z-10 flex flex-col items-center gap-3 mb-7 text-center">
         {logo ? (
           <img
             src={logo}
@@ -264,7 +264,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
         <h1 className="auth-title text-2xl font-bold uppercase tracking-[0.22em]">
           {companyName}
         </h1>
-        <p className="text-xs uppercase tracking-[0.3em] text-[hsl(var(--muted-foreground))]">
+        <p className="auth-subtitle text-xs uppercase tracking-[0.3em]">
           Programa de Indicações · Luciano Larrossa
         </p>
       </div>
