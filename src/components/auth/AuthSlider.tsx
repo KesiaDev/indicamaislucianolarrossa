@@ -239,21 +239,34 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
   const logo = branding?.logoUrl;
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-4 py-6 bg-muted/30">
-      <div className="flex flex-col items-center gap-3 mb-6">
+    <main className="auth-scope relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-4 py-10">
+      {/* Fundo: retrato do mentor + camadas escuras e douradas */}
+      <div className="auth-bg" aria-hidden>
+        <img src={mentorAsset.url} alt="" className="auth-bg-photo" />
+        <div className="auth-bg-veil" />
+        <div className="auth-bg-embers" />
+      </div>
+
+      <div className="relative z-10 flex flex-col items-center gap-3 mb-7 text-center">
         {logo ? (
           <img
             src={logo}
             alt={companyName}
-            className="h-12 w-auto max-w-[180px] object-contain"
+            className="h-12 w-auto max-w-[180px] object-contain drop-shadow-[0_4px_18px_rgba(0,0,0,0.6)]"
           />
         ) : (
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+          <div className="auth-crest flex h-12 w-12 items-center justify-center rounded-xl">
             <Sparkles className="h-6 w-6" />
           </div>
         )}
-        <h1 className="text-xl font-semibold tracking-tight">{companyName}</h1>
+        <h1 className="auth-title text-2xl font-bold uppercase tracking-[0.22em]">
+          {companyName}
+        </h1>
+        <p className="text-xs uppercase tracking-[0.3em] text-[hsl(var(--muted-foreground))]">
+          Programa de Indicações · Luciano Larrossa
+        </p>
       </div>
+
 
       {isFirstUser && (
         <div className="mb-6 flex w-full max-w-content items-start gap-3 rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 text-left">
