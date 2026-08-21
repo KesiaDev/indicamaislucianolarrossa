@@ -378,7 +378,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           right: 0;
           width: 50%;
           height: 100%;
-          background: hsl(var(--card));
+          background: transparent;
           display: flex;
           align-items: center;
           color: hsl(var(--foreground));
