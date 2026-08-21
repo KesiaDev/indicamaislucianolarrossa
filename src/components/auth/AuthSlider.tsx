@@ -16,6 +16,8 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useBranding } from "@/hooks/useBranding";
+import mentorPhoto from "@/assets/luciano-larrossa.webp";
+
 
 const emailSchema = z.string().trim().email("E-mail inválido").max(255);
 const passSchema = z.string().min(6, "Mínimo 6 caracteres").max(100);
@@ -239,25 +241,38 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
   const logo = branding?.logoUrl;
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-4 py-6 bg-muted/30">
-      <div className="flex flex-col items-center gap-3 mb-6">
+    <main className="auth-scope relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-4 py-10">
+      {/* Fundo: retrato do mentor + camadas escuras e douradas */}
+      <div className="auth-bg" aria-hidden>
+        <img src={mentorPhoto} alt="" className="auth-bg-photo" />
+        <div className="auth-bg-veil" />
+        <div className="auth-bg-embers" />
+      </div>
+
+      <div className="relative z-10 flex flex-col items-center gap-3 mb-7 text-center">
         {logo ? (
           <img
             src={logo}
             alt={companyName}
-            className="h-12 w-auto max-w-[180px] object-contain"
+            className="h-12 w-auto max-w-[180px] object-contain drop-shadow-[0_4px_18px_rgba(0,0,0,0.6)]"
           />
         ) : (
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+          <div className="auth-crest flex h-12 w-12 items-center justify-center rounded-xl">
             <Sparkles className="h-6 w-6" />
           </div>
         )}
-        <h1 className="text-xl font-semibold tracking-tight">{companyName}</h1>
+        <h1 className="auth-title text-2xl font-bold uppercase tracking-[0.22em]">
+          {companyName}
+        </h1>
+        <p className="text-xs uppercase tracking-[0.3em] text-[hsl(var(--muted-foreground))]">
+          Programa de Indicações · Luciano Larrossa
+        </p>
       </div>
 
+
       {isFirstUser && (
-        <div className="mb-6 flex w-full max-w-content items-start gap-3 rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 text-left">
-          <Crown className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
+        <div className="relative z-10 mb-6 flex w-full max-w-content items-start gap-3 rounded-xl border border-primary/40 bg-primary/10 px-4 py-3 text-left backdrop-blur">
+          <Crown className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
           <div className="text-sm">
             <p className="font-semibold text-foreground">
               Bem-vindo ao seu novo programa de indicações!
@@ -271,22 +286,107 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
       )}
 
       <style>{`
+        /* Tema escuro + dourado, aplicado apenas na tela de login */
+        .auth-scope {
+          --background: 20 16% 4%;
+          --foreground: 40 32% 96%;
+          --card: 24 14% 9%;
+          --card-foreground: 40 32% 96%;
+          --muted: 26 14% 15%;
+          --muted-foreground: 38 16% 70%;
+          --input: 36 26% 26%;
+          --border: 36 26% 22%;
+          --primary: 38 82% 54%;
+          --primary-foreground: 24 40% 8%;
+          --secondary: 30 60% 40%;
+          --destructive: 4 76% 60%;
+          --warning: 38 92% 56%;
+          color: hsl(var(--foreground));
+          background: radial-gradient(120% 90% at 50% 0%, hsl(26 40% 12%) 0%, hsl(22 30% 6%) 45%, hsl(20 20% 3%) 100%);
+        }
+        .auth-bg {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          pointer-events: none;
+        }
+        .auth-bg-photo {
+          position: absolute;
+          top: 0;
+          right: 0;
+          height: 100%;
+          width: min(58%, 900px);
+          object-fit: cover;
+          object-position: 50% 20%;
+          filter: contrast(1.2) brightness(0.9) sepia(0.3) saturate(1.35);
+          opacity: 0.9;
+          -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 42%, #000 100%),
+                              linear-gradient(180deg, #000 0%, #000 55%, transparent 96%);
+          -webkit-mask-composite: source-in;
+          mask-image: linear-gradient(90deg, transparent 0%, #000 42%, #000 100%),
+                      linear-gradient(180deg, #000 0%, #000 55%, transparent 96%);
+          mask-composite: intersect;
+        }
+        .auth-bg-veil {
+          position: absolute;
+          inset: 0;
+          background:
+            radial-gradient(60% 55% at 20% 40%, hsl(32 95% 55% / 0.10) 0%, transparent 70%),
+            radial-gradient(90% 60% at 70% 6%, hsl(32 95% 55% / 0.16) 0%, transparent 62%),
+            linear-gradient(180deg, hsl(20 25% 3% / 0.5) 0%, hsl(20 25% 3% / 0.3) 32%, hsl(20 22% 3% / 0.78) 80%, hsl(20 20% 2% / 0.96) 100%);
+        }
+
+
+        .auth-bg-embers {
+          position: absolute;
+          inset: -10%;
+          background:
+            radial-gradient(2px 2px at 12% 78%, hsl(35 100% 62% / 0.85), transparent 60%),
+            radial-gradient(2px 2px at 82% 66%, hsl(28 100% 58% / 0.8), transparent 60%),
+            radial-gradient(1.5px 1.5px at 30% 40%, hsl(40 100% 65% / 0.7), transparent 60%),
+            radial-gradient(2.5px 2.5px at 68% 86%, hsl(24 100% 55% / 0.75), transparent 60%),
+            radial-gradient(1.5px 1.5px at 55% 20%, hsl(42 100% 70% / 0.6), transparent 60%),
+            radial-gradient(2px 2px at 90% 30%, hsl(30 100% 60% / 0.55), transparent 60%);
+          animation: auth-embers 14s ease-in-out infinite alternate;
+        }
+        @keyframes auth-embers {
+          from { transform: translate3d(0, 0, 0); opacity: 0.75; }
+          to   { transform: translate3d(0, -28px, 0); opacity: 1; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .auth-bg-embers { animation: none; }
+        }
+        .auth-crest {
+          background: linear-gradient(135deg, hsl(44 92% 62%), hsl(28 88% 46%));
+          color: hsl(24 40% 8%);
+          box-shadow: 0 10px 30px hsl(32 90% 50% / 0.35);
+        }
+        .auth-title {
+          background: linear-gradient(180deg, hsl(46 96% 78%), hsl(32 85% 52%));
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+        }
         .auth-container {
           position: relative;
+          z-index: 10;
           width: 850px;
           max-width: 100%;
           height: 550px;
-          background: hsl(var(--card));
+          background: hsl(24 14% 9% / 0.86);
+          backdrop-filter: blur(14px);
+          border: 1px solid hsl(38 60% 55% / 0.28);
           border-radius: 30px;
-          box-shadow: 0 8px 32px hsl(var(--foreground) / 0.12);
+          box-shadow: 0 30px 80px hsl(20 40% 2% / 0.8), 0 0 0 1px hsl(38 80% 60% / 0.08), 0 0 90px hsl(32 90% 50% / 0.12);
           overflow: hidden;
         }
+
         .auth-form-box {
           position: absolute;
           right: 0;
           width: 50%;
           height: 100%;
-          background: hsl(var(--card));
+          background: transparent;
           display: flex;
           align-items: center;
           color: hsl(var(--foreground));
@@ -315,7 +415,9 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           left: -250%;
           width: 300%;
           height: 100%;
-          background: hsl(var(--primary));
+          background: linear-gradient(135deg, hsl(44 92% 60%) 0%, hsl(32 88% 48%) 45%, hsl(22 70% 26%) 100%);
+          box-shadow: inset 0 0 80px hsl(20 60% 10% / 0.45);
+
           border-radius: 150px;
           z-index: 2;
           transition: 1.8s ease-in-out;
