@@ -301,26 +301,26 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           top: 0;
           right: 0;
           height: 100%;
-          width: min(72%, 1100px);
+          width: min(78%, 1200px);
           object-fit: cover;
-          object-position: 70% 22%;
-          filter: contrast(1.15) brightness(0.95) sepia(0.2) saturate(1.25);
-          opacity: 1;
-          -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 52%, #000 100%),
-                              linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+          object-position: 72% 18%;
+          filter: contrast(1.22) brightness(1.02) saturate(1.05) sharpness(1.1);
+          opacity: 0.95;
+          -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 48%, #000 100%),
+                              linear-gradient(180deg, transparent 0%, #000 10%, #000 88%, transparent 100%);
           -webkit-mask-composite: source-in;
-          mask-image: linear-gradient(90deg, transparent 0%, #000 52%, #000 100%),
-                      linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0%, #000 48%, #000 100%),
+                      linear-gradient(180deg, transparent 0%, #000 10%, #000 88%, transparent 100%);
           mask-composite: intersect;
         }
         .auth-bg-veil {
           position: absolute;
           inset: 0;
           background:
-            radial-gradient(70% 80% at 86% 40%, hsl(32 90% 55% / 0.06) 0%, transparent 55%),
-            radial-gradient(60% 55% at 20% 40%, hsl(32 95% 55% / 0.10) 0%, transparent 70%),
-            linear-gradient(90deg, hsl(20 25% 3% / 0.92) 0%, hsl(20 25% 3% / 0.55) 42%, hsl(20 22% 3% / 0.22) 62%, hsl(20 20% 2% / 0.35) 100%),
-            linear-gradient(180deg, hsl(20 25% 3% / 0.45) 0%, transparent 28%, transparent 72%, hsl(20 20% 2% / 0.92) 100%);
+            radial-gradient(70% 80% at 88% 35%, hsl(32 90% 55% / 0.08) 0%, transparent 55%),
+            radial-gradient(60% 55% at 18% 40%, hsl(32 95% 55% / 0.12) 0%, transparent 70%),
+            linear-gradient(90deg, hsl(20 25% 3% / 0.94) 0%, hsl(20 25% 3% / 0.60) 40%, hsl(20 22% 3% / 0.18) 60%, hsl(20 20% 2% / 0.30) 100%),
+            linear-gradient(180deg, hsl(20 25% 3% / 0.55) 0%, transparent 26%, transparent 74%, hsl(20 20% 2% / 0.94) 100%);
         }
 
 
