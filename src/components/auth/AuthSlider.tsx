@@ -462,17 +462,17 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
                 className="w-full h-11 rounded-md bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition disabled:opacity-60"
               >
                 {regBusy
-                  ? "Enviando…"
+                  ? "A enviar…"
                   : isFirstUser
                     ? "Criar conta do aluno"
                     : "Enviar confirmação"}
               </button>
 
               <p className="text-xs text-muted-foreground">
-                {isFirstUser
-                  ? "Como primeiro registo, crias a conta do aluno e tornas-te administrador da plataforma."
-                  : "Você receberá um e-mail para confirmar e definir sua senha."}
+                Cria a tua conta de aluno para participar no programa de
+                indicações.
               </p>
+
             </form>
           )}
         </div>
