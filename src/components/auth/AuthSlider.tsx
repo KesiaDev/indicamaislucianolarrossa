@@ -301,16 +301,16 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           top: 0;
           right: 0;
           height: 100%;
-          width: min(78%, 1200px);
+          width: min(80%, 1250px);
           object-fit: cover;
-          object-position: 72% 18%;
-          filter: contrast(1.28) brightness(1.05) saturate(1.08);
-          opacity: 0.95;
-          -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 48%, #000 100%),
-                              linear-gradient(180deg, transparent 0%, #000 10%, #000 88%, transparent 100%);
+          object-position: 70% 12%;
+          filter: contrast(1.35) brightness(1.08) saturate(1.12);
+          opacity: 1;
+          -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 46%, #000 100%),
+                              linear-gradient(180deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
           -webkit-mask-composite: source-in;
-          mask-image: linear-gradient(90deg, transparent 0%, #000 48%, #000 100%),
-                      linear-gradient(180deg, transparent 0%, #000 10%, #000 88%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0%, #000 46%, #000 100%),
+                      linear-gradient(180deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
           mask-composite: intersect;
         }
         .auth-bg-veil {
