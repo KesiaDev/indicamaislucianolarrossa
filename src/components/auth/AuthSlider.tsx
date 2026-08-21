@@ -242,7 +242,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
   const logo = branding?.logoUrl;
 
   return (
-    <main className="auth-scope relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-4 py-10">
+    <main className="auth-scope relative min-h-screen flex flex-col items-center justify-end overflow-hidden px-4 pb-10 pt-28">
       {/* Fundo: retrato do mentor + camadas escuras e douradas */}
       <div className="auth-bg" aria-hidden>
         <img src={mentorPhoto} alt="" className="auth-bg-photo" />
@@ -250,25 +250,23 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
         <div className="auth-bg-embers" />
       </div>
 
-      <div className="auth-header relative z-10 flex flex-col items-center gap-3 mb-7 text-center">
-        {logo ? (
+      <div className="auth-header relative z-10 flex flex-col items-center gap-4 mb-8 text-center">
+        <div className="auth-logo-ring relative">
           <img
-            src={logo}
+            src={lucianoLogo.url}
             alt={companyName}
-            className="h-16 w-auto max-w-[220px] object-contain drop-shadow-[0_6px_22px_rgba(0,0,0,0.75)]"
+            className="auth-logo-img h-20 w-20 object-contain drop-shadow-[0_8px_30px_rgba(0,0,0,0.85)]"
           />
-        ) : (
-          <div className="auth-crest flex h-14 w-14 items-center justify-center rounded-2xl">
-            <Sparkles className="h-7 w-7" />
-          </div>
-        )}
-        <h1 className="auth-title text-3xl font-extrabold uppercase tracking-[0.24em]">
-          {companyName}
-        </h1>
-        <span className="auth-rule" aria-hidden />
-        <p className="auth-subtitle text-[11px] font-semibold uppercase tracking-[0.34em]">
-          Programa de Indicações · Luciano Larrossa
-        </p>
+        </div>
+        <div className="flex flex-col items-center gap-1">
+          <h1 className="auth-title text-3xl font-extrabold uppercase tracking-[0.24em]">
+            {companyName}
+          </h1>
+          <span className="auth-rule" aria-hidden />
+          <p className="auth-subtitle text-[11px] font-semibold uppercase tracking-[0.34em]">
+            Programa de Indicações · Luciano Larrossa
+          </p>
+        </div>
       </div>
 
 
