@@ -308,9 +308,157 @@ function ResendCard({ status, onChanged }: { status: Status; onChanged: () => vo
 
 /* ---------------------- WHATSAPP ---------------------- */
 
+type ClintAccount = {
+  id: string;
+  name: string;
+  identifier: string | null;
+  team_name: string | null;
+  type: string | null;
+  status: string | null;
+  is_enabled: boolean;
+  is_default: boolean;
+};
+
+function ClintNumbersPanel({ apiKeyConfigured }: { apiKeyConfigured: boolean }) {
+  const qc = useQueryClient();
+  const { data: accounts, isLoading } = useQuery({
+    queryKey: ["clint-accounts"],
+    queryFn: async (): Promise<ClintAccount[]> => {
+      const { data, error } = await (supabase.from("clint_channel_accounts" as any) as any)
+        .select("*")
+        .order("name", { ascending: true });
+      if (error) throw error;
+      return (data ?? []) as ClintAccount[];
+    },
+  });
+
+  const invalidate = () => qc.invalidateQueries({ queryKey: ["clint-accounts"] });
+
+  const sync = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.functions.invoke("clint-channels", { body: {} });
+      if (error) throw new Error(error.message);
+      if ((data as any)?.error) throw new Error((data as any).error);
+      return data as any;
+    },
+    onSuccess: (d: any) => {
+      toast.success(`${d?.synced ?? 0} números sincronizados da Clint`);
+      invalidate();
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const toggle = useMutation({
+    mutationFn: async ({ id, value }: { id: string; value: boolean }) => {
+      const { error } = await (supabase.from("clint_channel_accounts" as any) as any)
+        .update({ is_enabled: value })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const setDefault = useMutation({
+    mutationFn: async (id: string) => {
+      const table = () => supabase.from("clint_channel_accounts" as any) as any;
+      const { error: e1 } = await table().update({ is_default: false }).neq("id", id);
+      if (e1) throw e1;
+      const { error: e2 } = await table().update({ is_default: true, is_enabled: true }).eq("id", id);
+      if (e2) throw e2;
+    },
+    onSuccess: invalidate,
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const list = accounts ?? [];
+  const usable = list.filter((a) => a.type === "WHATSAPP_OFFICIAL" && a.status === "CONNECTED");
+  const others = list.filter((a) => !(a.type === "WHATSAPP_OFFICIAL" && a.status === "CONNECTED"));
+  const activeCount = usable.filter((a) => a.is_enabled).length;
+
+  return (
+    <div className="rounded-md border bg-muted/20 p-3 space-y-3">
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-sm font-medium">Números conectados</p>
+          <p className="text-xs text-muted-foreground">
+            {activeCount > 0
+              ? `${activeCount} de ${usable.length} números ativos para envio (rodízio automático).`
+              : "Nenhum número ativo. Sincronize e ative os números desejados."}
+          </p>
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={!apiKeyConfigured || sync.isPending}
+          onClick={() => sync.mutate()}
+        >
+          <RefreshCw className={`h-4 w-4 mr-2 ${sync.isPending ? "animate-spin" : ""}`} />
+          Sincronizar
+        </Button>
+      </div>
+
+      {isLoading ? (
+        <p className="text-xs text-muted-foreground">Carregando…</p>
+      ) : list.length === 0 ? (
+        <p className="text-xs text-muted-foreground">
+          {apiKeyConfigured
+            ? "Clique em Sincronizar para trazer os números da sua conta Clint."
+            : "Configure a API Key da Clint para listar os números."}
+        </p>
+      ) : (
+        <ul className="divide-y rounded-md border bg-background">
+          {[...usable, ...others].map((a) => {
+            const usableItem = a.type === "WHATSAPP_OFFICIAL" && a.status === "CONNECTED";
+            return (
+              <li key={a.id} className="flex items-center gap-3 p-2.5">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="truncate text-sm font-medium">{a.name}</span>
+                    {a.is_default && usableItem && (
+                      <Badge variant="secondary" className="text-[10px]">Padrão</Badge>
+                    )}
+                    {!usableItem && (
+                      <Badge variant="outline" className="text-[10px]">
+                        {a.status === "CONNECTED" ? "Não oficial" : "Desconectado"}
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="truncate text-xs text-muted-foreground">
+                    +{a.identifier ?? "—"}
+                    {a.team_name ? ` · ${a.team_name}` : ""}
+                  </p>
+                </div>
+                {usableItem && !a.is_default && a.is_enabled && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs"
+                    onClick={() => setDefault.mutate(a.id)}
+                  >
+                    Tornar padrão
+                  </Button>
+                )}
+                <Switch
+                  checked={a.is_enabled}
+                  disabled={!usableItem || toggle.isPending}
+                  onCheckedChange={(v) => toggle.mutate({ id: a.id, value: v })}
+                  aria-label={`Ativar ${a.name}`}
+                />
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 function WhatsappCard({ status, onChanged }: { status: Status; onChanged: () => void }) {
   const { profile } = useAuth();
-  const connected = !!status.CLINT_API_KEY && !!status.CLINT_CHANNEL_ACCOUNT_ID;
+  const connected = !!status.CLINT_API_KEY;
 
   const [open, setOpen] = useState(false);
   const [removeOpen, setRemoveOpen] = useState(false);
