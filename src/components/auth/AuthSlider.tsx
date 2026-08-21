@@ -389,14 +389,14 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
         .auth-container {
           position: relative;
           z-index: 10;
-          width: 850px;
+          width: 760px;
           max-width: 100%;
-          height: 550px;
-          background: hsl(24 14% 9% / 0.86);
+          height: 460px;
+          background: hsl(24 14% 9% / 0.82);
           backdrop-filter: blur(14px);
-          border: 1px solid hsl(38 60% 55% / 0.28);
-          border-radius: 30px;
-          box-shadow: 0 30px 80px hsl(20 40% 2% / 0.8), 0 0 0 1px hsl(38 80% 60% / 0.08), 0 0 90px hsl(32 90% 50% / 0.12);
+          border: 1px solid hsl(38 60% 55% / 0.22);
+          border-radius: 24px;
+          box-shadow: 0 24px 60px hsl(20 40% 2% / 0.7), 0 0 0 1px hsl(38 80% 60% / 0.06);
           overflow: hidden;
         }
 
@@ -427,6 +427,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           position: absolute;
           width: 100%;
           height: 100%;
+          pointer-events: none;
         }
         .auth-toggle-box::before {
           content: '';
@@ -434,12 +435,13 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           left: -250%;
           width: 300%;
           height: 100%;
-          background: linear-gradient(135deg, hsl(44 92% 60%) 0%, hsl(32 88% 48%) 45%, hsl(22 70% 26%) 100%);
-          box-shadow: inset 0 0 80px hsl(20 60% 10% / 0.45);
-
+          background: hsl(24 14% 10% / 0.55);
+          border: 1px solid hsl(38 60% 55% / 0.18);
+          box-shadow: inset 0 0 60px hsl(20 60% 10% / 0.35);
           border-radius: 150px;
           z-index: 2;
           transition: 1.8s ease-in-out;
+          backdrop-filter: blur(8px);
         }
         .auth-container.active .auth-toggle-box::before {
           left: 50%;
@@ -448,7 +450,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           position: absolute;
           width: 50%;
           height: 100%;
-          color: hsl(var(--primary-foreground));
+          color: hsl(40 32% 96%);
           display: flex;
           flex-direction: column;
           justify-content: center;
@@ -478,8 +480,8 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           .auth-container {
             width: 100%;
             height: calc(100vh - 160px);
-            min-height: 620px;
-            border-radius: 24px;
+            min-height: 560px;
+            border-radius: 20px;
           }
           .auth-form-box {
             bottom: 0;
@@ -712,28 +714,28 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
         {/* Toggle Box */}
         <div className="auth-toggle-box">
           <div className="auth-toggle-panel left">
-            <h2 className="text-3xl font-bold mb-2">Olá, bem-vindo!</h2>
-            <p className="text-sm opacity-90 mb-5">
-              Ainda não tem cadastro como indicador?
+            <h2 className="text-xl font-semibold mb-1">Novo por aqui?</h2>
+            <p className="text-xs opacity-80 mb-4">
+              Crie sua conta e comece a indicar.
             </p>
             <button
               type="button"
               onClick={() => setIsActive(true)}
               aria-pressed={isActive}
-              className="w-40 h-11 rounded-md border-2 border-primary-foreground text-primary-foreground text-sm font-semibold hover:bg-primary-foreground/10 transition"
+              className="px-5 h-9 rounded-full border border-primary-foreground/60 text-primary-foreground text-xs font-medium hover:bg-primary-foreground/10 transition"
             >
               Quero me cadastrar
             </button>
           </div>
 
           <div className="auth-toggle-panel right">
-            <h2 className="text-3xl font-bold mb-2">Bem-vindo de volta!</h2>
-            <p className="text-sm opacity-90 mb-5">Já tem uma conta?</p>
+            <h2 className="text-xl font-semibold mb-1">Já tem conta?</h2>
+            <p className="text-xs opacity-80 mb-4">Acesse sua área.</p>
             <button
               type="button"
               onClick={() => setIsActive(false)}
               aria-pressed={!isActive}
-              className="w-40 h-11 rounded-md border-2 border-primary-foreground text-primary-foreground text-sm font-semibold hover:bg-primary-foreground/10 transition"
+              className="px-5 h-9 rounded-full border border-primary-foreground/60 text-primary-foreground text-xs font-medium hover:bg-primary-foreground/10 transition"
             >
               Entrar
             </button>
