@@ -16,6 +16,8 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useBranding } from "@/hooks/useBranding";
+import mentorAsset from "@/assets/luciano-larrossa.webp.asset.json";
+
 
 const emailSchema = z.string().trim().email("E-mail inválido").max(255);
 const passSchema = z.string().min(6, "Mínimo 6 caracteres").max(100);
