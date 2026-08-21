@@ -65,12 +65,14 @@ Deno.serve(async (req) => {
         }, 500);
       }
       // O trigger handle_new_user já cria profile como admin (1º profile).
-      // Garantia extra: força role=admin caso o trigger não tenha rodado.
-      await supabase.from("profiles").update({
+      // Garantia extra: upsert força a existência do profile mesmo sem trigger.
+      await supabase.from("profiles").upsert({
+        id: created.user.id,
         role: "admin",
+        email,
         full_name,
         phone: phone ?? null,
-      }).eq("id", created.user.id);
+      }, { onConflict: "id" });
 
       return json({ ok: true, bootstrap_admin: true, user_id: created.user.id });
     }
