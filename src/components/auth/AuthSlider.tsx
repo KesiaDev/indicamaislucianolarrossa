@@ -16,7 +16,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useBranding } from "@/hooks/useBranding";
-import mentorAsset from "@/assets/luciano-larrossa.webp.asset.json";
+import mentorPhoto from "@/assets/luciano-larrossa.webp";
 
 
 const emailSchema = z.string().trim().email("E-mail inválido").max(255);
@@ -244,7 +244,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
     <main className="auth-scope relative min-h-screen flex flex-col items-center justify-center overflow-hidden px-4 py-10">
       {/* Fundo: retrato do mentor + camadas escuras e douradas */}
       <div className="auth-bg" aria-hidden>
-        <img src={mentorAsset.url} alt="" className="auth-bg-photo" />
+        <img src={mentorPhoto} alt="" className="auth-bg-photo" />
         <div className="auth-bg-veil" />
         <div className="auth-bg-embers" />
       </div>
