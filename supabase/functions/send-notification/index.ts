@@ -37,8 +37,8 @@ const CLINT_BASE = "https://api.clint.digital";
 // Separa E.164 em DDI + número local (Clint guarda os dois campos).
 function splitPhone(e164: string): { ddi: string; local: string } {
   const digits = e164.replace(/^whatsapp:/, "").replace(/\D+/g, "");
-  if (digits.startsWith("55")) return { ddi: "55", local: digits.slice(2) };
   if (digits.startsWith("351")) return { ddi: "351", local: digits.slice(3) };
+  if (digits.startsWith("55")) return { ddi: "55", local: digits.slice(2) };
   if (digits.startsWith("1") && digits.length === 11) return { ddi: "1", local: digits.slice(1) };
   return { ddi: digits.slice(0, 2), local: digits.slice(2) };
 }
@@ -83,7 +83,7 @@ async function clintResolveContact(
 }
 
 
-// --- E.164 normalization (BR-aware) ---
+// --- E.164 normalization (PT-aware, com fallback BR) ---
 function toE164(phone: string | null | undefined): string | null {
   if (!phone) return null;
   const trimmed = String(phone).trim();
@@ -94,8 +94,12 @@ function toE164(phone: string | null | undefined): string | null {
   const digits = raw.replace(/\D+/g, "");
   if (!digits) return null;
   let e164: string | null = null;
-  if ((digits.length === 12 || digits.length === 13) && digits.startsWith("55")) {
+  if (digits.length === 12 && digits.startsWith("351")) {
     e164 = "+" + digits;
+  } else if ((digits.length === 12 || digits.length === 13) && digits.startsWith("55")) {
+    e164 = "+" + digits;
+  } else if (digits.length === 9 && digits.startsWith("9")) {
+    e164 = "+351" + digits;
   } else if (digits.length === 10 || digits.length === 11) {
     e164 = "+55" + digits;
   } else if (digits.length >= 8 && digits.length <= 15) {

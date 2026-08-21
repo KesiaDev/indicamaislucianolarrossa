@@ -78,7 +78,7 @@ Deno.serve(async (req) => {
     const fullName = (signup as any).full_name as string;
     const phone = (signup as any).phone as string | null;
 
-    // Cria usuário (email já confirmado — o opt-in foi o e-mail nosso)
+    // Cria utilizador (email já confirmado — o opt-in foi o e-mail nosso)
     const { data: created, error: cuErr } = await supabase.auth.admin.createUser({
       email,
       password,

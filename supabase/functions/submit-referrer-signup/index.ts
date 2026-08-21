@@ -1,4 +1,4 @@
-// Public endpoint: cria/renova um pedido de cadastro de indicador
+// Public endpoint: cria/renova um pedido de registo de indicador
 // e dispara e-mail de confirmação (double opt-in).
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { z } from "https://esm.sh/zod@3.23.8";
@@ -167,10 +167,10 @@ Deno.serve(async (req) => {
 
     const subject = (tpl as any)?.subject
       ? render((tpl as any).subject)
-      : "Confirme seu cadastro";
+      : "Confirme seu registo";
     const bodyText = (tpl as any)?.body
       ? render((tpl as any).body)
-      : `Olá ${full_name}, confirme seu cadastro: ${confirmationUrl}`;
+      : `Olá ${full_name}, confirme seu registo: ${confirmationUrl}`;
     const html = `<div style="font-family:Inter,Arial,sans-serif;color:#0F172A;font-size:15px;line-height:1.6;white-space:pre-wrap;">${
       bodyText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(
         /(https?:\/\/[^\s<]+)/g,
@@ -205,7 +205,7 @@ Deno.serve(async (req) => {
       const details = await res.text();
       console.error("resend error", res.status, details);
       const hint = res.status === 401 || res.status === 403
-        ? "A RESEND_API_KEY salva em Configurações → Integrações é inválida ou foi revogada. Gere uma nova chave no Resend e salve novamente."
+        ? "A RESEND_API_KEY salva em Definições → Integrações é inválida ou foi revogada. Gere uma nova chave no Resend e salve novamente."
         : "Falha ao enviar o e-mail de confirmação pelo Resend.";
       return json({ error: "email_send_failed", status: res.status, hint, details }, 502);
     }

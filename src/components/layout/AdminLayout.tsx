@@ -37,7 +37,7 @@ const items: Array<{
   { to: "/admin/campaigns", label: "Campanhas", icon: Megaphone, prefetch: "campaigns" },
   { to: "/admin/rewards-queue", label: "Prêmios", icon: Gift, prefetch: "rewardsQueue" },
   { to: "/admin/referrers", label: "Indicadores", icon: Users, prefetch: "referrers" },
-  { to: "/admin/settings", label: "Configurações", icon: Settings, prefetch: "settings" },
+  { to: "/admin/settings", label: "Definições", icon: Settings, prefetch: "settings" },
 ];
 
 const COLLAPSED_KEY = "admin.sidebar.collapsed";
@@ -47,7 +47,7 @@ function getPageTitle(pathname: string): string {
   if (pathname.startsWith("/admin/campaigns")) return "Campanhas";
   if (pathname.startsWith("/admin/rewards-queue")) return "Prêmios";
   if (pathname.startsWith("/admin/referrers")) return "Indicadores";
-  if (pathname.startsWith("/admin/settings")) return "Configurações";
+  if (pathname.startsWith("/admin/settings")) return "Definições";
   return "";
 }
 

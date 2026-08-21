@@ -47,8 +47,8 @@ const EVENTS: EventDef[] = [
   },
   {
     key: "referral_registered",
-    label: "Indicação registrada",
-    description: "Disparado quando um lead se cadastra via link de indicação.",
+    label: "Indicação registada",
+    description: "Disparado quando um lead se regista via link de indicação.",
     channels: ["email", "whatsapp"],
     placeholders: [
       "{{referrer_first_name}}",
@@ -319,10 +319,10 @@ function TemplateEditor({
         lead_name: "Maria Lead",
         lead_email: "maria@exemplo.com",
         campaign_name: "Campanha exemplo",
-        conversion_value: "R$ 250,00",
-        reward_description: "Voucher de R$ 50",
+        conversion_value: "250,00 €",
+        reward_description: "Voucher de 50 €",
         redemption_code: "TESTE123",
-        reward_value: "R$ 50,00",
+        reward_value: "50,00 €",
         rewards_url: window.location.origin + "/app/rewards",
       };
       const body: any = {

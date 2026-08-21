@@ -1,7 +1,7 @@
 import { useAuth } from "./useAuth";
 
 /**
- * Atalho para acessar o profile do usuário autenticado.
+ * Atalho para acessar o profile do utilizador autenticado.
  * O fetch + cache em memória já é feito por useAuth/AuthProvider.
  */
 export function useProfile() {

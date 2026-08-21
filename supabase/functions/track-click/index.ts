@@ -1,4 +1,4 @@
-// track-click: público, registra clique e (se houver URL externa) redireciona
+// track-click: público, regista clique e (se houver URL externa) redireciona
 // GET  /track-click?code=<link_code>&v=<variant_id?>  -> 302 (se URL externa) ou 204
 // POST /track-click  body: { code, variant_id? }      -> 200 (fire-and-forget do front)
 import { createClient } from "npm:@supabase/supabase-js@2";
@@ -87,7 +87,7 @@ Deno.serve(async (req) => {
     const ua = req.headers.get("user-agent") || null;
     const hash = ip !== "unknown" ? await ipHash(ip) : null;
 
-    // Registra clique individual + incrementa contador (fire-and-forget)
+    // Regista clique individual + incrementa contador (fire-and-forget)
     Promise.all([
       supabase.from("referral_clicks").insert({
         link_id: (link as any).id,

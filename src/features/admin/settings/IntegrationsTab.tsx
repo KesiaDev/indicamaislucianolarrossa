@@ -143,7 +143,7 @@ function ResendCard({ status, onChanged }: { status: Status; onChanged: () => vo
         .eq("email", testTo.trim().toLowerCase())
         .maybeSingle();
       if (!profs?.id) {
-        toast.error("Nenhum perfil com esse e-mail. Use um e-mail já cadastrado.");
+        toast.error("Nenhum perfil com esse e-mail. Use um e-mail já registado.");
         setTesting(false);
         return;
       }
@@ -152,7 +152,7 @@ function ResendCard({ status, onChanged }: { status: Status; onChanged: () => vo
           profile_id: profs.id,
           channel: "email",
           subject: "Teste de envio (Indica+)",
-          body: "Este é um e-mail de teste enviado a partir das Configurações.",
+          body: "Este é um e-mail de teste enviado a partir das Definições.",
           template: { kind: "raw" },
         },
       });
@@ -272,7 +272,7 @@ function ResendCard({ status, onChanged }: { status: Status; onChanged: () => vo
           <DialogHeader>
             <DialogTitle>Enviar e-mail de teste</DialogTitle>
             <DialogDescription>
-              Use o e-mail de um perfil já cadastrado no sistema.
+              Use o e-mail de um perfil já registado no sistema.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-1.5">
@@ -615,7 +615,7 @@ function WhatsappCard({ status, onChanged }: { status: Status; onChanged: () => 
             <div className="rounded-md border bg-muted/30 p-3 text-xs space-y-1">
               <p className="font-medium text-foreground">Onde encontrar</p>
               <p className="text-muted-foreground">
-                A API Key fica em Configurações → API na Clint. O ID da conta de canal é o
+                A API Key fica em Definições → API na Clint. O ID da conta de canal é o
                 <code className="mx-1 font-mono">id</code> retornado em
                 <code className="mx-1 font-mono">/v2/channel-accounts</code> para o número de WhatsApp Oficial desejado.
               </p>

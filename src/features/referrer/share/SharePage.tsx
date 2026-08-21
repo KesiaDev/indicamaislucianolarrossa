@@ -168,7 +168,7 @@ export default function SharePage() {
       vibrate(10);
       toast.success("Compartilhado! 🚀");
     } catch {
-      /* usuário cancelou */
+      /* utilizador cancelou */
     }
   };
 

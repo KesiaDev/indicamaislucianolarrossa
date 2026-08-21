@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { formatBRT, formatBRTDate } from "@/lib/datetime";
 import { cn } from "@/lib/utils";
+import { formatEUR } from "@/lib/currency";
 
 export type RewardStatus = "pending" | "approved" | "paid" | "rejected";
 export type RewardType = "cash" | "discount" | "gift_card" | "product";
@@ -122,7 +123,7 @@ export function RewardCard({
                 </p>
                 {value != null && (
                   <p className="text-xs text-muted-foreground font-medium">
-                    Valor: R$ {Number(value).toFixed(2)}
+                    Valor: {formatEUR(value as number)}
                   </p>
                 )}
               </div>

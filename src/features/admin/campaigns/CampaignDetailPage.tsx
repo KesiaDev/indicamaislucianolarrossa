@@ -25,6 +25,7 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { Loading } from "@/components/shared/Loading";
 import { KpiCard } from "@/components/shared/KpiCard";
 import { formatBRT, formatSP } from "@/lib/datetime";
+import { formatEUR } from "@/lib/currency";
 import { cn } from "@/lib/utils";
 import { CampaignFormDialog } from "./CampaignFormDialog";
 import { RewardRuleFormDialog } from "./RewardRuleFormDialog";
@@ -157,7 +158,7 @@ export default function CampaignDetailPage() {
             <AlertDialogTitle>Avisar todos os indicadores?</AlertDialogTitle>
             <AlertDialogDescription>
               Será enviada uma notificação por e-mail e WhatsApp (conforme as regras configuradas)
-              para cada indicador cadastrado, divulgando a campanha "{campaign.name}".
+              para cada indicador registado, divulgando a campanha "{campaign.name}".
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -554,7 +555,7 @@ function ReferralsTab({ campaignId }: { campaignId: string }) {
                   <TableCell className="text-xs">{formatBRT(r.created_at)}</TableCell>
                   <TableCell className="text-xs">{formatBRT(r.converted_at)}</TableCell>
                   <TableCell className="text-right">
-                    {r.conversion_value != null ? `R$ ${Number(r.conversion_value).toFixed(2)}` : "—"}
+                    {r.conversion_value != null ? formatEUR(r.conversion_value) : "—"}
                   </TableCell>
                 </TableRow>
               ))}

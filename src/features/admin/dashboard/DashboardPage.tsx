@@ -144,7 +144,7 @@ export default function DashboardPage() {
           <CardHeader><CardTitle>Funil de indicações</CardTitle></CardHeader>
           <CardContent>
             {funnelData.every((d) => d.value === 0) ? (
-              <EmptyState title="Sem dados" description="Ainda não há indicações registradas." />
+              <EmptyState title="Sem dados" description="Ainda não há indicações registadas." />
             ) : (
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">

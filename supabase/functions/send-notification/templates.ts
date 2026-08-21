@@ -8,7 +8,7 @@ const MUTED = "#64748B";
 
 function shell(title: string, inner: string) {
   return `<!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-PT">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />

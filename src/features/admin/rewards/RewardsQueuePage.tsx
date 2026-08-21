@@ -30,6 +30,7 @@ import { formatBRT } from "@/lib/datetime";
 import { toast } from "sonner";
 import { TableSkeleton } from "@/components/shared/Skeletons";
 import { Gift } from "lucide-react";
+import { formatEUR } from "@/lib/currency";
 
 type Status = "pending" | "approved" | "paid" | "rejected";
 type Reward = {
@@ -54,7 +55,7 @@ function genCode() {
 
 function formatValue(r: Reward) {
   if (r.reward_value == null) return "—";
-  if (r.reward_type === "cash") return `R$ ${r.reward_value.toFixed(2)}`;
+  if (r.reward_type === "cash") return formatEUR(r.reward_value);
   if (r.reward_type === "discount") return `${r.reward_value}%`;
   return String(r.reward_value);
 }
