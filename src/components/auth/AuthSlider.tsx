@@ -254,20 +254,22 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           <img
             src={logo}
             alt={companyName}
-            className="h-12 w-auto max-w-[180px] object-contain drop-shadow-[0_4px_18px_rgba(0,0,0,0.6)]"
+            className="h-16 w-auto max-w-[220px] object-contain drop-shadow-[0_6px_22px_rgba(0,0,0,0.75)]"
           />
         ) : (
-          <div className="auth-crest flex h-12 w-12 items-center justify-center rounded-xl">
-            <Sparkles className="h-6 w-6" />
+          <div className="auth-crest flex h-14 w-14 items-center justify-center rounded-2xl">
+            <Sparkles className="h-7 w-7" />
           </div>
         )}
-        <h1 className="auth-title text-2xl font-bold uppercase tracking-[0.22em]">
+        <h1 className="auth-title text-3xl font-extrabold uppercase tracking-[0.24em]">
           {companyName}
         </h1>
-        <p className="auth-subtitle text-xs uppercase tracking-[0.3em]">
+        <span className="auth-rule" aria-hidden />
+        <p className="auth-subtitle text-[11px] font-semibold uppercase tracking-[0.34em]">
           Programa de Indicações · Luciano Larrossa
         </p>
       </div>
+
 
 
 
