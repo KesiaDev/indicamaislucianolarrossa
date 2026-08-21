@@ -325,8 +325,23 @@ Deno.serve(async (req) => {
         logBody = text;
 
         const apiKey = await vaultGet("CLINT_API_KEY");
-        const channelAccountId = await vaultGet("CLINT_CHANNEL_ACCOUNT_ID");
-        if (!apiKey || !channelAccountId) {
+
+        // Números habilitados na tabela (rotação por menos usado recentemente).
+        const { data: accounts } = await supabase
+          .from("clint_channel_accounts")
+          .select("id, is_default, last_used_at")
+          .eq("is_enabled", true)
+          .eq("type", "WHATSAPP_OFFICIAL")
+          .eq("status", "CONNECTED")
+          .order("last_used_at", { ascending: true, nullsFirst: true });
+
+        let candidates = ((accounts ?? []) as any[]).map((a) => a.id as string);
+        if (!candidates.length) {
+          const fallback = await vaultGet("CLINT_CHANNEL_ACCOUNT_ID");
+          if (fallback) candidates = [fallback];
+        }
+
+        if (!apiKey || !candidates.length) {
           errorMessage = "clint_not_configured";
         } else {
           try {
@@ -341,21 +356,29 @@ Deno.serve(async (req) => {
             if (!contactId) {
               errorMessage = "clint_contact_not_created";
             } else {
-              const res = await fetch(`${CLINT_BASE}/v2/messages/text`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "api-token": apiKey },
-                body: JSON.stringify({
-                  channel_account_id: channelAccountId,
-                  contact_id: contactId,
-                  message: text,
-                }),
-              });
-              const respJson = await res.json().catch(() => ({}));
-              if (!res.ok) {
-                console.error("clint send failed", res.status, JSON.stringify(respJson));
+              // Tenta cada número até um enviar com sucesso (failover).
+              for (const channelAccountId of candidates) {
+                const res = await fetch(`${CLINT_BASE}/v2/messages/text`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json", "api-token": apiKey },
+                  body: JSON.stringify({
+                    channel_account_id: channelAccountId,
+                    contact_id: contactId,
+                    message: text,
+                  }),
+                });
+                const respJson = await res.json().catch(() => ({}));
+                if (res.ok) {
+                  providerMessageId = (respJson as any)?.data?.message_id ?? null;
+                  errorMessage = null;
+                  await supabase
+                    .from("clint_channel_accounts")
+                    .update({ last_used_at: new Date().toISOString() })
+                    .eq("id", channelAccountId);
+                  break;
+                }
+                console.error("clint send failed", channelAccountId, res.status, JSON.stringify(respJson));
                 errorMessage = (respJson as any)?.message || `clint_${res.status}`;
-              } else {
-                providerMessageId = (respJson as any)?.data?.message_id ?? null;
               }
             }
           } catch (err) {
