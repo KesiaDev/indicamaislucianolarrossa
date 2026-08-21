@@ -312,23 +312,23 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
         }
         .auth-bg-photo {
           position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%) scale(1.08);
-          min-width: 100%;
-          min-height: 100%;
+          inset: 0;
+          width: 100%;
+          height: 100%;
           object-fit: cover;
-          object-position: center 22%;
-          filter: grayscale(0.25) contrast(1.15) brightness(0.62) sepia(0.32) saturate(1.25);
-          opacity: 0.55;
+          object-position: 50% 18%;
+          filter: contrast(1.2) brightness(0.95) sepia(0.28) saturate(1.35);
+          opacity: 0.95;
         }
         .auth-bg-veil {
           position: absolute;
           inset: 0;
           background:
-            radial-gradient(85% 60% at 50% 18%, hsl(30 90% 55% / 0.16) 0%, transparent 62%),
-            linear-gradient(180deg, hsl(20 25% 3% / 0.72) 0%, hsl(20 25% 3% / 0.86) 55%, hsl(20 25% 2% / 0.97) 100%);
+            radial-gradient(70% 55% at 50% 30%, transparent 0%, hsl(20 25% 3% / 0.35) 55%, hsl(20 25% 3% / 0.8) 100%),
+            radial-gradient(90% 60% at 50% 8%, hsl(32 95% 55% / 0.18) 0%, transparent 60%),
+            linear-gradient(180deg, hsl(20 25% 3% / 0.55) 0%, hsl(20 25% 3% / 0.35) 30%, hsl(20 22% 3% / 0.82) 78%, hsl(20 20% 2% / 0.97) 100%);
         }
+
         .auth-bg-embers {
           position: absolute;
           inset: -10%;
