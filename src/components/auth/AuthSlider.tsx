@@ -316,7 +316,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          object-position: 50% 18%;
+          object-position: 78% 22%;
           filter: contrast(1.2) brightness(0.95) sepia(0.28) saturate(1.35);
           opacity: 0.95;
         }
