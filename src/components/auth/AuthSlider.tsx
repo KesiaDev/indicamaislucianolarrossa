@@ -270,20 +270,6 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
       </div>
 
 
-      {isFirstUser && (
-        <div className="relative z-10 mb-6 flex w-full max-w-content items-start gap-3 rounded-xl border border-primary/40 bg-primary/10 px-4 py-3 text-left backdrop-blur">
-          <Crown className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-          <div className="text-sm">
-            <p className="font-semibold text-foreground">
-              Bem-vindo ao seu novo programa de indicações!
-            </p>
-            <p className="text-muted-foreground">
-              O primeiro a se cadastrar será o administrador. Use o formulário
-              de cadastro ao lado.
-            </p>
-          </div>
-        </div>
-      )}
 
       <style>{`
         /* Tema escuro + dourado, aplicado apenas na tela de login */
@@ -315,26 +301,28 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           top: 0;
           right: 0;
           height: 100%;
-          width: min(58%, 900px);
+          width: min(72%, 1100px);
           object-fit: cover;
-          object-position: 50% 20%;
-          filter: contrast(1.2) brightness(0.9) sepia(0.3) saturate(1.35);
-          opacity: 0.9;
-          -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 42%, #000 100%),
-                              linear-gradient(180deg, #000 0%, #000 55%, transparent 96%);
+          object-position: 70% 22%;
+          filter: contrast(1.15) brightness(0.95) sepia(0.2) saturate(1.25);
+          opacity: 1;
+          -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 52%, #000 100%),
+                              linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
           -webkit-mask-composite: source-in;
-          mask-image: linear-gradient(90deg, transparent 0%, #000 42%, #000 100%),
-                      linear-gradient(180deg, #000 0%, #000 55%, transparent 96%);
+          mask-image: linear-gradient(90deg, transparent 0%, #000 52%, #000 100%),
+                      linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
           mask-composite: intersect;
         }
         .auth-bg-veil {
           position: absolute;
           inset: 0;
           background:
+            radial-gradient(70% 80% at 86% 40%, hsl(32 90% 55% / 0.06) 0%, transparent 55%),
             radial-gradient(60% 55% at 20% 40%, hsl(32 95% 55% / 0.10) 0%, transparent 70%),
-            radial-gradient(90% 60% at 70% 6%, hsl(32 95% 55% / 0.16) 0%, transparent 62%),
-            linear-gradient(180deg, hsl(20 25% 3% / 0.5) 0%, hsl(20 25% 3% / 0.3) 32%, hsl(20 22% 3% / 0.78) 80%, hsl(20 20% 2% / 0.96) 100%);
+            linear-gradient(90deg, hsl(20 25% 3% / 0.92) 0%, hsl(20 25% 3% / 0.55) 42%, hsl(20 22% 3% / 0.22) 62%, hsl(20 20% 2% / 0.35) 100%),
+            linear-gradient(180deg, hsl(20 25% 3% / 0.45) 0%, transparent 28%, transparent 72%, hsl(20 20% 2% / 0.92) 100%);
         }
+
 
 
         .auth-bg-embers {
@@ -721,7 +709,23 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           </div>
         </div>
       </div>
+
+      {isFirstUser && (
+        <div className="relative z-10 mt-6 flex w-full max-w-[850px] items-start gap-3 rounded-xl border border-primary/40 bg-primary/10 px-4 py-3 text-left backdrop-blur">
+          <Crown className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+          <div className="text-sm">
+            <p className="font-semibold text-foreground">
+              Bem-vindo ao seu novo programa de indicações!
+            </p>
+            <p className="text-muted-foreground">
+              O primeiro a se cadastrar será o administrador. Use o formulário
+              de cadastro ao lado.
+            </p>
+          </div>
+        </div>
+      )}
     </main>
+
   );
 }
 
