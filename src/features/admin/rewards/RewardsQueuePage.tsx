@@ -30,6 +30,7 @@ import { formatBRT } from "@/lib/datetime";
 import { toast } from "sonner";
 import { TableSkeleton } from "@/components/shared/Skeletons";
 import { Gift } from "lucide-react";
+import { formatEUR } from "@/lib/currency";
 
 type Status = "pending" | "approved" | "paid" | "rejected";
 type Reward = {

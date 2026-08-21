@@ -25,6 +25,7 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { Loading } from "@/components/shared/Loading";
 import { KpiCard } from "@/components/shared/KpiCard";
 import { formatBRT, formatSP } from "@/lib/datetime";
+import { formatEUR } from "@/lib/currency";
 import { cn } from "@/lib/utils";
 import { CampaignFormDialog } from "./CampaignFormDialog";
 import { RewardRuleFormDialog } from "./RewardRuleFormDialog";

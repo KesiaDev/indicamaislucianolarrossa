@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { formatBRT, formatBRTDate } from "@/lib/datetime";
 import { cn } from "@/lib/utils";
+import { formatEUR } from "@/lib/currency";
 
 export type RewardStatus = "pending" | "approved" | "paid" | "rejected";
 export type RewardType = "cash" | "discount" | "gift_card" | "product";
