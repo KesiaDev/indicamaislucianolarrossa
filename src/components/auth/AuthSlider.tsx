@@ -270,20 +270,6 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
       </div>
 
 
-      {isFirstUser && (
-        <div className="relative z-10 mb-6 flex w-full max-w-content items-start gap-3 rounded-xl border border-primary/40 bg-primary/10 px-4 py-3 text-left backdrop-blur">
-          <Crown className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-          <div className="text-sm">
-            <p className="font-semibold text-foreground">
-              Bem-vindo ao seu novo programa de indicações!
-            </p>
-            <p className="text-muted-foreground">
-              O primeiro a se cadastrar será o administrador. Use o formulário
-              de cadastro ao lado.
-            </p>
-          </div>
-        </div>
-      )}
 
       <style>{`
         /* Tema escuro + dourado, aplicado apenas na tela de login */
