@@ -543,12 +543,8 @@ function WhatsappCard({ status, onChanged }: { status: Status; onChanged: () => 
 
   const fields = [
     { name: "CLINT_API_KEY", label: "API Key da Clint", type: "password" as const, placeholder: "clint_live_..." },
-    {
-      name: "CLINT_CHANNEL_ACCOUNT_ID",
-      label: "ID da conta de canal (WhatsApp Oficial)",
-      placeholder: "550e8400-e29b-41d4-a716-446655440001",
-    },
   ];
+
 
   return (
     <>
