@@ -350,24 +350,24 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           box-shadow: 0 10px 30px hsl(32 90% 50% / 0.35);
         }
         .auth-header {
-          padding: 18px 32px 22px;
+          padding: 18px 32px 24px;
           border-radius: 20px;
           background:
-            radial-gradient(120% 100% at 50% 0%, hsl(20 20% 3% / 0.72) 0%, transparent 70%),
-            linear-gradient(180deg, hsl(20 20% 3% / 0.55) 0%, transparent 100%);
-          -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 75%, transparent 100%);
-          mask-image: linear-gradient(180deg, #000 0%, #000 75%, transparent 100%);
+            radial-gradient(120% 100% at 50% 0%, hsl(20 20% 3% / 0.45) 0%, transparent 70%),
+            linear-gradient(180deg, hsl(20 20% 3% / 0.28) 0%, transparent 100%);
+          -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 70%, transparent 100%);
+          mask-image: linear-gradient(180deg, #000 0%, #000 70%, transparent 100%);
         }
         .auth-title {
           background: linear-gradient(180deg, hsl(46 96% 84%), hsl(32 85% 54%));
           -webkit-background-clip: text;
           background-clip: text;
           color: transparent;
-          text-shadow: 0 2px 18px hsl(20 20% 2% / 0.55);
+          text-shadow: 0 2px 20px hsl(20 20% 2% / 0.75), 0 1px 4px hsl(20 20% 2% / 0.5);
         }
         .auth-subtitle {
-          color: hsl(38 18% 74%);
-          text-shadow: 0 1px 10px hsl(20 20% 2% / 0.6);
+          color: hsl(38 20% 78%);
+          text-shadow: 0 1px 12px hsl(20 20% 2% / 0.8), 0 1px 3px hsl(20 20% 2% / 0.5);
         }
         .auth-container {
           position: relative;
