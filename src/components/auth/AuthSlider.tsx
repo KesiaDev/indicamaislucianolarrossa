@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useBranding } from "@/hooks/useBranding";
 import mentorPhoto from "@/assets/luciano-larrossa.webp";
+import lucianoLogo from "@/assets/luciano-larrossa-logo.png.asset.json";
 
 
 const emailSchema = z.string().trim().email("E-mail inválido").max(255);
