@@ -312,22 +312,30 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
         }
         .auth-bg-photo {
           position: absolute;
-          inset: 0;
-          width: 100%;
+          top: 0;
+          right: 0;
           height: 100%;
+          width: min(58%, 900px);
           object-fit: cover;
-          object-position: 78% 22%;
-          filter: contrast(1.2) brightness(0.95) sepia(0.28) saturate(1.35);
-          opacity: 0.95;
+          object-position: 50% 20%;
+          filter: contrast(1.2) brightness(0.9) sepia(0.3) saturate(1.35);
+          opacity: 0.9;
+          -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 42%, #000 100%),
+                              linear-gradient(180deg, #000 0%, #000 55%, transparent 96%);
+          -webkit-mask-composite: source-in;
+          mask-image: linear-gradient(90deg, transparent 0%, #000 42%, #000 100%),
+                      linear-gradient(180deg, #000 0%, #000 55%, transparent 96%);
+          mask-composite: intersect;
         }
         .auth-bg-veil {
           position: absolute;
           inset: 0;
           background:
-            radial-gradient(70% 55% at 50% 30%, transparent 0%, hsl(20 25% 3% / 0.35) 55%, hsl(20 25% 3% / 0.8) 100%),
-            radial-gradient(90% 60% at 50% 8%, hsl(32 95% 55% / 0.18) 0%, transparent 60%),
-            linear-gradient(180deg, hsl(20 25% 3% / 0.55) 0%, hsl(20 25% 3% / 0.35) 30%, hsl(20 22% 3% / 0.82) 78%, hsl(20 20% 2% / 0.97) 100%);
+            radial-gradient(60% 55% at 20% 40%, hsl(32 95% 55% / 0.10) 0%, transparent 70%),
+            radial-gradient(90% 60% at 70% 6%, hsl(32 95% 55% / 0.16) 0%, transparent 62%),
+            linear-gradient(180deg, hsl(20 25% 3% / 0.5) 0%, hsl(20 25% 3% / 0.3) 32%, hsl(20 22% 3% / 0.78) 80%, hsl(20 20% 2% / 0.96) 100%);
         }
+
 
         .auth-bg-embers {
           position: absolute;
