@@ -242,7 +242,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
   const logo = branding?.logoUrl;
 
   return (
-    <main className="auth-scope relative min-h-screen flex flex-col items-center justify-end overflow-hidden px-4 pb-10 pt-28">
+    <main className="auth-scope relative min-h-screen flex flex-col items-start justify-end overflow-hidden px-4 pb-10 pt-28 pl-[6%] md:pl-[10%] lg:pl-[14%]">
       {/* Fundo: retrato do mentor + camadas escuras e douradas */}
       <div className="auth-bg" aria-hidden>
         <img src={mentorPhoto} alt="" className="auth-bg-photo" />
