@@ -133,6 +133,51 @@ export type Database = {
           },
         ]
       }
+      clint_channel_accounts: {
+        Row: {
+          avatar: string | null
+          created_at: string
+          id: string
+          identifier: string | null
+          is_default: boolean
+          is_enabled: boolean
+          last_used_at: string | null
+          name: string
+          status: string | null
+          team_name: string | null
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar?: string | null
+          created_at?: string
+          id: string
+          identifier?: string | null
+          is_default?: boolean
+          is_enabled?: boolean
+          last_used_at?: string | null
+          name: string
+          status?: string | null
+          team_name?: string | null
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar?: string | null
+          created_at?: string
+          id?: string
+          identifier?: string | null
+          is_default?: boolean
+          is_enabled?: boolean
+          last_used_at?: string | null
+          name?: string
+          status?: string | null
+          team_name?: string | null
+          type?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       conversion_webhooks: {
         Row: {
           created_at: string
