@@ -407,7 +407,9 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           left: -250%;
           width: 300%;
           height: 100%;
-          background: hsl(var(--primary));
+          background: linear-gradient(135deg, hsl(44 92% 60%) 0%, hsl(32 88% 48%) 45%, hsl(22 70% 26%) 100%);
+          box-shadow: inset 0 0 80px hsl(20 60% 10% / 0.45);
+
           border-radius: 150px;
           z-index: 2;
           transition: 1.8s ease-in-out;
