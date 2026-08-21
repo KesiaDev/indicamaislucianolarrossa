@@ -4,99 +4,110 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 10%;
+    /* Claro — creme quente com dourado (harmonizado com o login) */
+    --background: 40 30% 97%;
+    --foreground: 24 20% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 10%;
+    --card-foreground: 24 20% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 10%;
+    --popover-foreground: 24 20% 12%;
 
-    /* Verde vibrante (Duolingo-ish) */
-    --primary: 142 76% 45%;
-    --primary-foreground: 0 0% 100%;
+    /* Dourado */
+    --primary: 38 82% 48%;
+    --primary-foreground: 24 40% 8%;
 
-    /* Azul elétrico */
-    --secondary: 217 91% 60%;
-    --secondary-foreground: 0 0% 100%;
+    /* Âmbar escuro / bronze */
+    --secondary: 30 45% 32%;
+    --secondary-foreground: 40 32% 96%;
 
-    --muted: 240 5% 96%;
-    --muted-foreground: 240 4% 46%;
+    --muted: 38 22% 93%;
+    --muted-foreground: 30 10% 42%;
 
-    /* Amarelo mostarda */
-    --accent: 38 92% 55%;
-    --accent-foreground: 240 10% 10%;
+    --accent: 40 90% 88%;
+    --accent-foreground: 24 30% 16%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 4 76% 52%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 142 76% 45%;
+    --success: 152 48% 38%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 55%;
-    --warning-foreground: 240 10% 10%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 24 40% 10%;
 
-    --border: 240 6% 90%;
-    --input: 240 6% 90%;
-    --ring: 142 76% 45%;
+    --border: 36 22% 86%;
+    --input: 36 22% 86%;
+    --ring: 38 82% 48%;
 
     /* Hierarquia de superfícies (light) */
     --surface-1: 0 0% 100%;
-    --surface-2: 240 5% 97%;
+    --surface-2: 40 26% 95%;
     --elevated: 0 0% 100%;
 
     --radius: 0.75rem;
 
-    /* Sidebar (admin) — escuro com primary verde */
-    --sidebar-background: 240 10% 8%;
-    --sidebar-foreground: 0 0% 96%;
-    --sidebar-primary: 142 76% 45%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 6% 14%;
-    --sidebar-accent-foreground: 0 0% 96%;
-    --sidebar-border: 240 6% 16%;
-    --sidebar-ring: 142 76% 45%;
+    /* Sidebar (admin) — carvão quente com dourado */
+    --sidebar-background: 22 16% 7%;
+    --sidebar-foreground: 40 30% 94%;
+    --sidebar-primary: 38 82% 54%;
+    --sidebar-primary-foreground: 24 40% 8%;
+    --sidebar-accent: 26 14% 14%;
+    --sidebar-accent-foreground: 40 30% 94%;
+    --sidebar-border: 36 20% 18%;
+    --sidebar-ring: 38 82% 54%;
   }
 
   .dark {
-    --background: 240 10% 8%;
-    --foreground: 0 0% 98%;
-    --card: 240 8% 11%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 8% 11%;
-    --popover-foreground: 0 0% 98%;
+    /* Escuro — carvão quente com dourado (igual ao login) */
+    --background: 20 16% 5%;
+    --foreground: 40 32% 96%;
+    --card: 24 14% 9%;
+    --card-foreground: 40 32% 96%;
+    --popover: 24 14% 10%;
+    --popover-foreground: 40 32% 96%;
 
-    --primary: 142 70% 50%;
-    --primary-foreground: 240 10% 8%;
+    --primary: 38 82% 54%;
+    --primary-foreground: 24 40% 8%;
 
-    --secondary: 217 91% 60%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 30 60% 40%;
+    --secondary-foreground: 40 32% 96%;
 
-    --muted: 240 5% 15%;
-    --muted-foreground: 240 5% 65%;
+    --muted: 26 14% 15%;
+    --muted-foreground: 38 16% 70%;
 
-    --accent: 38 92% 55%;
-    --accent-foreground: 240 10% 8%;
+    --accent: 30 40% 20%;
+    --accent-foreground: 40 32% 96%;
 
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 4 76% 60%;
+    --destructive-foreground: 40 32% 96%;
 
-    --success: 142 70% 50%;
-    --success-foreground: 240 10% 8%;
+    --success: 152 46% 46%;
+    --success-foreground: 24 40% 8%;
 
-    --warning: 38 92% 55%;
-    --warning-foreground: 240 10% 8%;
+    --warning: 38 92% 56%;
+    --warning-foreground: 24 40% 8%;
 
-    --border: 240 5% 20%;
-    --input: 240 5% 20%;
-    --ring: 142 70% 50%;
+    --border: 36 26% 22%;
+    --input: 36 26% 26%;
+    --ring: 38 82% 54%;
 
     /* Hierarquia de superfícies (dark) */
-    --surface-1: 240 8% 11%;
-    --surface-2: 240 6% 14%;
-    --elevated: 240 8% 13%;
+    --surface-1: 24 14% 9%;
+    --surface-2: 26 14% 13%;
+    --elevated: 26 14% 12%;
+
+    --sidebar-background: 20 16% 4%;
+    --sidebar-foreground: 40 30% 94%;
+    --sidebar-primary: 38 82% 54%;
+    --sidebar-primary-foreground: 24 40% 8%;
+    --sidebar-accent: 26 14% 12%;
+    --sidebar-accent-foreground: 40 30% 94%;
+    --sidebar-border: 36 22% 16%;
+    --sidebar-ring: 38 82% 54%;
   }
+
 }
 
 @layer base {
