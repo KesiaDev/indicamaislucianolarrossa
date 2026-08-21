@@ -389,14 +389,14 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
         .auth-container {
           position: relative;
           z-index: 10;
-          width: 850px;
+          width: 760px;
           max-width: 100%;
-          height: 550px;
-          background: hsl(24 14% 9% / 0.86);
+          height: 460px;
+          background: hsl(24 14% 9% / 0.82);
           backdrop-filter: blur(14px);
-          border: 1px solid hsl(38 60% 55% / 0.28);
-          border-radius: 30px;
-          box-shadow: 0 30px 80px hsl(20 40% 2% / 0.8), 0 0 0 1px hsl(38 80% 60% / 0.08), 0 0 90px hsl(32 90% 50% / 0.12);
+          border: 1px solid hsl(38 60% 55% / 0.22);
+          border-radius: 24px;
+          box-shadow: 0 24px 60px hsl(20 40% 2% / 0.7), 0 0 0 1px hsl(38 80% 60% / 0.06);
           overflow: hidden;
         }
 
