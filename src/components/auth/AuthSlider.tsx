@@ -163,17 +163,15 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
       setRegErr(parsed.error.issues[0]?.message ?? "Dados inválidos");
       return;
     }
-    if (isFirstUser) {
-      try {
-        passSchema.parse(regForm.password);
-      } catch (err) {
-        const m =
-          err instanceof z.ZodError
-            ? err.issues[0]?.message
-            : "Senha inválida";
-        setRegErr(m || "Senha inválida");
-        return;
-      }
+    try {
+      passSchema.parse(regForm.password);
+    } catch (err) {
+      const m =
+        err instanceof z.ZodError
+          ? err.issues[0]?.message
+          : "Senha inválida";
+      setRegErr(m || "Senha inválida");
+      return;
     }
     setRegBusy(true);
     try {
@@ -185,7 +183,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
             email: parsed.data.email,
             phone: parsed.data.phone || null,
             app_url: window.location.origin,
-            ...(isFirstUser ? { password: regForm.password } : {}),
+            password: regForm.password,
           },
         },
       );
@@ -201,18 +199,20 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           insert_failed: "Erro ao registar seu registo. Tente novamente.",
           update_failed: "Erro ao atualizar seu registo. Tente novamente.",
           invalid_body: "Dados inválidos. Confira os campos.",
+          create_user_failed:
+            "Não foi possível criar a conta. Verifique os dados e tente novamente.",
           password_required_for_bootstrap:
-            "Defina uma senha para criar a conta de administrador.",
+            "Defina uma palavra-passe para criar a conta.",
           bootstrap_failed:
-            "Não foi possível criar a conta de administrador. Tente novamente.",
+            "Não foi possível criar a conta. Tente novamente.",
         };
         setRegErr(
           map[errCode ?? ""] ?? errCode ?? fnErr?.message ?? "Erro ao enviar.",
         );
         return;
       }
-      // Bootstrap do 1º admin: faz login automático
-      if ((data as any)?.bootstrap_admin) {
+      // Conta criada (aluno ou 1º admin): faz login automático
+      if ((data as any)?.account_created || (data as any)?.bootstrap_admin) {
         const { error: signErr } = await supabase.auth.signInWithPassword({
           email: parsed.data.email,
           password: regForm.password,
@@ -224,10 +224,11 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           setMode("login");
           return;
         }
-        toast.success("Bem-vindo, administrador!");
+        toast.success("Conta criada. Bem-vindo(a)!");
         return;
       }
       setRegSuccess(true);
+
     } catch (err) {
       setRegErr((err as Error).message);
     } finally {
