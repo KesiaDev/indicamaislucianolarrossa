@@ -1,0 +1,1 @@
+update auth.users set encrypted_password = crypt('Indica2026!', gen_salt('bf')), updated_at = now() where email = 'kesia@llmidiaco.com';
