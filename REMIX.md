@@ -23,7 +23,7 @@ Nenhum segredo de provedor externo é copiado. Tudo é configurado pelo painel a
 | `RESEND_API_KEY`, `RESEND_FROM` | Configurações → Integrações → Resend | **Sim** (e-mail de confirmação de indicador) |
 | `RESEND_WEBHOOK_SECRET` | Configurações → Integrações → Resend | Opcional (recomendado) |
 | `WEBHOOK_SECRET` | Configurações → Integrações → Webhook de conversão | **Sim** (se for receber conversão de sistema externo) |
-| `TWILIO_*` ou `EVOLUTION_*` | Configurações → Integrações → WhatsApp | Opcional |
+| `CLINT_API_KEY` e `CLINT_CHANNEL_ACCOUNT_ID` | Configurações → Integrações → WhatsApp | Opcional |
 
 ---
 
