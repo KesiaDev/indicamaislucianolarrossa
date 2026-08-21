@@ -9,16 +9,13 @@ import {
   Phone,
   Eye,
   EyeOff,
-  Sparkles,
   CheckCircle2,
-  Crown,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useBranding } from "@/hooks/useBranding";
 import mentorPhoto from "@/assets/luciano-larrossa.webp";
 import lucianoLogo from "@/assets/luciano-larrossa-logo.png";
-
 
 const emailSchema = z.string().trim().email("E-mail inválido").max(255);
 const passSchema = z.string().min(6, "Mínimo 6 caracteres").max(100);
@@ -70,7 +67,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
   const { data: branding } = useBranding();
   const navigate = useNavigate();
 
-  const [isActive, setIsActive] = useState(initialMode === "register");
+  const [mode, setMode] = useState<"login" | "register">(initialMode);
 
   // Login state
   const [loginForm, setLoginForm] = useState({ email: "", pass: "" });
@@ -224,7 +221,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           toast.error("Conta criada, mas falhou ao entrar", {
             description: "Tente fazer login manualmente.",
           });
-          setIsActive(false);
+          setMode("login");
           return;
         }
         toast.success("Bem-vindo, administrador!");
@@ -239,10 +236,9 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
   };
 
   const companyName = branding?.companyName ?? "Indica+";
-  const logo = branding?.logoUrl;
 
   return (
-    <main className="auth-scope relative min-h-screen flex flex-col items-start justify-end overflow-hidden px-4 pb-10 pt-28 pl-[6%] md:pl-[10%] lg:pl-[14%]">
+    <main className="auth-scope relative min-h-screen flex flex-col items-start justify-center overflow-hidden px-6 py-10 pl-[6%] md:pl-[10%] lg:pl-[14%]">
       {/* Fundo: retrato do mentor + camadas escuras e douradas */}
       <div className="auth-bg" aria-hidden>
         <img src={mentorPhoto} alt="" className="auth-bg-photo" />
@@ -250,364 +246,134 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
         <div className="auth-bg-embers" />
       </div>
 
-      <div className="auth-header relative z-10 flex flex-col items-center gap-4 mb-8 text-center">
+      {/* Cabeçalho alinhado ao card */}
+      <div className="auth-header relative z-10 flex items-center gap-4 mb-6">
         <div className="auth-logo-ring relative">
           <img
             src={lucianoLogo}
             alt={companyName}
-            className="auth-logo-img h-20 w-20 object-contain drop-shadow-[0_8px_30px_rgba(0,0,0,0.85)]"
+            className="auth-logo-img h-14 w-14 object-contain drop-shadow-[0_8px_30px_rgba(0,0,0,0.85)]"
           />
         </div>
-        <div className="flex flex-col items-center gap-1">
-          <h1 className="auth-title text-3xl font-extrabold uppercase tracking-[0.24em]">
+        <div className="flex flex-col">
+          <h1 className="auth-title text-2xl font-extrabold uppercase tracking-[0.22em]">
             {companyName}
           </h1>
-          <span className="auth-rule" aria-hidden />
-          <p className="auth-subtitle text-[11px] font-semibold uppercase tracking-[0.34em]">
+          <p className="auth-subtitle text-[10px] font-semibold uppercase tracking-[0.3em]">
             Programa de Indicações · Luciano Larrossa
           </p>
         </div>
       </div>
 
-
-
-
-      <style>{`
-        /* Tema escuro + dourado, aplicado apenas na tela de login */
-        .auth-scope {
-          --background: 20 16% 4%;
-          --foreground: 40 32% 96%;
-          --card: 24 14% 9%;
-          --card-foreground: 40 32% 96%;
-          --muted: 26 14% 15%;
-          --muted-foreground: 38 16% 70%;
-          --input: 36 26% 26%;
-          --border: 36 26% 22%;
-          --primary: 38 82% 54%;
-          --primary-foreground: 24 40% 8%;
-          --secondary: 30 60% 40%;
-          --destructive: 4 76% 60%;
-          --warning: 38 92% 56%;
-          color: hsl(var(--foreground));
-          background: radial-gradient(120% 90% at 50% 0%, hsl(26 40% 12%) 0%, hsl(22 30% 6%) 45%, hsl(20 20% 3%) 100%);
-        }
-        .auth-bg {
-          position: absolute;
-          inset: 0;
-          overflow: hidden;
-          pointer-events: none;
-        }
-        .auth-bg-photo {
-          position: absolute;
-          top: 0;
-          right: 0;
-          height: 100%;
-          width: min(80%, 1250px);
-          object-fit: cover;
-          object-position: 70% 12%;
-          filter: contrast(1.35) brightness(1.08) saturate(1.12);
-          opacity: 1;
-          -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 46%, #000 100%),
-                              linear-gradient(180deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
-          -webkit-mask-composite: source-in;
-          mask-image: linear-gradient(90deg, transparent 0%, #000 46%, #000 100%),
-                      linear-gradient(180deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
-          mask-composite: intersect;
-        }
-        .auth-bg-veil {
-          position: absolute;
-          inset: 0;
-          background:
-            radial-gradient(70% 80% at 88% 35%, hsl(32 90% 55% / 0.08) 0%, transparent 55%),
-            radial-gradient(60% 55% at 18% 40%, hsl(32 95% 55% / 0.12) 0%, transparent 70%),
-            linear-gradient(90deg, hsl(20 25% 3% / 0.94) 0%, hsl(20 25% 3% / 0.60) 40%, hsl(20 22% 3% / 0.18) 60%, hsl(20 20% 2% / 0.30) 100%),
-            linear-gradient(180deg, hsl(20 25% 3% / 0.55) 0%, transparent 26%, transparent 74%, hsl(20 20% 2% / 0.94) 100%);
-        }
-
-
-
-        .auth-bg-embers {
-          position: absolute;
-          inset: -10%;
-          background:
-            radial-gradient(2px 2px at 12% 78%, hsl(35 100% 62% / 0.85), transparent 60%),
-            radial-gradient(2px 2px at 82% 66%, hsl(28 100% 58% / 0.8), transparent 60%),
-            radial-gradient(1.5px 1.5px at 30% 40%, hsl(40 100% 65% / 0.7), transparent 60%),
-            radial-gradient(2.5px 2.5px at 68% 86%, hsl(24 100% 55% / 0.75), transparent 60%),
-            radial-gradient(1.5px 1.5px at 55% 20%, hsl(42 100% 70% / 0.6), transparent 60%),
-            radial-gradient(2px 2px at 90% 30%, hsl(30 100% 60% / 0.55), transparent 60%);
-          animation: auth-embers 14s ease-in-out infinite alternate;
-        }
-        @keyframes auth-embers {
-          from { transform: translate3d(0, 0, 0); opacity: 0.75; }
-          to   { transform: translate3d(0, -28px, 0); opacity: 1; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .auth-bg-embers { animation: none; }
-        }
-        .auth-crest {
-          background: linear-gradient(135deg, hsl(44 92% 62%), hsl(28 88% 46%));
-          color: hsl(24 40% 8%);
-          box-shadow: 0 10px 30px hsl(32 90% 50% / 0.35);
-        }
-        .auth-logo-ring {
-          padding: 5px;
-          border-radius: 50%;
-          background: conic-gradient(from 0deg, hsl(44 92% 62%), hsl(32 88% 48%), hsl(44 92% 62%));
-          box-shadow: 0 10px 35px hsl(32 90% 50% / 0.35), inset 0 0 20px hsl(32 90% 50% / 0.15);
-        }
-        .auth-logo-img {
-          border-radius: 50%;
-          background: hsl(20 20% 5%);
-        }
-        .auth-header {
-          padding: 0;
-          background: transparent;
-          border: none;
-          box-shadow: none;
-          backdrop-filter: none;
-        }
-        .auth-title {
-          background: linear-gradient(180deg, hsl(46 98% 88%), hsl(34 92% 58%));
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
-          filter: drop-shadow(0 2px 10px hsl(32 90% 45% / 0.35));
-        }
-        .auth-rule {
-          display: block;
-          width: 86px;
-          height: 2px;
-          border-radius: 999px;
-          background: linear-gradient(90deg, transparent, hsl(38 90% 60% / 0.9), transparent);
-        }
-        .auth-subtitle {
-          color: hsl(40 40% 88%);
-          text-shadow: 0 1px 12px hsl(20 20% 2% / 0.9), 0 1px 3px hsl(20 20% 2% / 0.6);
-        }
-
-        .auth-container {
-          position: relative;
-          z-index: 10;
-          width: 760px;
-          max-width: 100%;
-          height: 460px;
-          background: hsl(24 14% 9% / 0.82);
-          backdrop-filter: blur(14px);
-          border: 1px solid hsl(38 60% 55% / 0.22);
-          border-radius: 24px;
-          box-shadow: 0 24px 60px hsl(20 40% 2% / 0.7), 0 0 0 1px hsl(38 80% 60% / 0.06);
-          overflow: hidden;
-        }
-
-        .auth-form-box {
-          position: absolute;
-          right: 0;
-          width: 50%;
-          height: 100%;
-          background: transparent;
-          display: flex;
-          align-items: center;
-          color: hsl(var(--foreground));
-          text-align: center;
-          padding: 40px;
-          z-index: 1;
-          transition: 0.6s ease-in-out 1.2s, visibility 0s 1s;
-        }
-        .auth-container.active .auth-form-box {
-          right: 50%;
-        }
-        .auth-form-box.register {
-          visibility: hidden;
-        }
-        .auth-container.active .auth-form-box.register {
-          visibility: visible;
-        }
-        .auth-toggle-box {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          pointer-events: none;
-        }
-        .auth-toggle-box::before {
-          content: '';
-          position: absolute;
-          left: -250%;
-          width: 300%;
-          height: 100%;
-          background: hsl(24 14% 10% / 0.55);
-          border: 1px solid hsl(38 60% 55% / 0.18);
-          box-shadow: inset 0 0 60px hsl(20 60% 10% / 0.35);
-          border-radius: 150px;
-          z-index: 2;
-          transition: 1.8s ease-in-out;
-          backdrop-filter: blur(8px);
-        }
-        .auth-container.active .auth-toggle-box::before {
-          left: 50%;
-        }
-        .auth-toggle-panel {
-          position: absolute;
-          width: 50%;
-          height: 100%;
-          color: hsl(40 32% 96%);
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          z-index: 2;
-          padding: 0 40px;
-          text-align: center;
-          transition: 0.6s ease-in-out;
-        }
-        .auth-toggle-panel.left {
-          left: 0;
-          transition-delay: 1.2s;
-        }
-        .auth-container.active .auth-toggle-panel.left {
-          left: -50%;
-          transition-delay: 0.6s;
-        }
-        .auth-toggle-panel.right {
-          right: -50%;
-          transition-delay: 0.6s;
-        }
-        .auth-container.active .auth-toggle-panel.right {
-          right: 0;
-          transition-delay: 1.2s;
-        }
-        @media screen and (max-width: 850px) {
-          .auth-container {
-            width: 100%;
-            height: calc(100vh - 160px);
-            min-height: 560px;
-            border-radius: 20px;
-          }
-          .auth-form-box {
-            bottom: 0;
-            width: 100%;
-            height: 70%;
-            padding: 24px;
-          }
-          .auth-container.active .auth-form-box {
-            right: 0;
-            bottom: 30%;
-          }
-          .auth-toggle-box::before {
-            left: 0;
-            top: -270%;
-            width: 100%;
-            height: 300%;
-            border-radius: 20vw;
-          }
-          .auth-container.active .auth-toggle-box::before {
-            left: 0;
-            top: 70%;
-          }
-          .auth-toggle-panel {
-            width: 100%;
-            height: 30%;
-            padding: 16px 24px;
-          }
-          .auth-toggle-panel.left {
-            top: 0;
-          }
-          .auth-container.active .auth-toggle-panel.left {
-            left: 0;
-            top: -30%;
-          }
-          .auth-toggle-panel.right {
-            right: 0;
-            bottom: -30%;
-          }
-          .auth-container.active .auth-toggle-panel.right {
-            bottom: 0;
-          }
-        }
-      `}</style>
-
-      <div className={`auth-container ${isActive ? "active" : ""}`}>
-        {/* Login Form */}
-        <div className="auth-form-box login">
-          <form onSubmit={doLogin} className="w-full space-y-4">
-            <h2 className="text-3xl font-bold mb-2">Entrar</h2>
-
-            {loginErr && (
-              <div className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-                {loginErr}
-              </div>
-            )}
-
-            <FieldInput
-              icon={<Mail className="h-4 w-4" />}
-              type="email"
-              placeholder="E-mail"
-              autoComplete="email"
-              value={loginForm.email}
-              onChange={(v) => setLoginForm({ ...loginForm, email: v })}
-            />
-
-            <div className="relative">
-              <input
-                type={showPass ? "text" : "password"}
-                placeholder="Senha"
-                value={loginForm.pass}
-                autoComplete="current-password"
-                onChange={(e) =>
-                  setLoginForm({ ...loginForm, pass: e.target.value })
-                }
-                className="w-full px-[15px] pr-11 py-[11px] bg-muted rounded-md border border-input outline-none text-sm transition-colors focus:border-primary focus:bg-card placeholder:text-muted-foreground"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPass((v) => !v)}
-                aria-label={showPass ? "Ocultar senha" : "Mostrar senha"}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              >
-                {showPass ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </button>
-            </div>
-
-            <button
-              type="button"
-              className="block w-full text-right text-xs text-muted-foreground hover:text-foreground -mt-2"
-              onClick={() =>
-                toast.info("Em breve", {
-                  description: "Recuperação de senha disponível em breve.",
-                })
-              }
-            >
-              Esqueci minha senha
-            </button>
-
-            <button
-              type="submit"
-              disabled={loginBusy}
-              className="w-full h-11 rounded-md bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition disabled:opacity-60"
-            >
-              {loginBusy ? "Entrando…" : "Entrar"}
-            </button>
-
-            <p className="text-xs text-muted-foreground">ou entre com</p>
-
-            <button
-              type="button"
-              onClick={handleGoogle}
-              className="w-full h-11 rounded-md border border-input bg-background text-sm font-medium hover:bg-muted transition flex items-center justify-center gap-2"
-            >
-              <GoogleIcon className="h-4 w-4" /> Continuar com Google
-            </button>
-          </form>
+      {/* Card de autenticação com abas */}
+      <div className="auth-card relative z-10 w-full max-w-[420px]">
+        {/* Abas */}
+        <div className="auth-tabs flex mb-4">
+          <button
+            type="button"
+            onClick={() => setMode("login")}
+            className={`auth-tab flex-1 pb-2 text-sm font-semibold uppercase tracking-wider transition-colors ${
+              mode === "login" ? "active" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Entrar
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("register")}
+            className={`auth-tab flex-1 pb-2 text-sm font-semibold uppercase tracking-wider transition-colors ${
+              mode === "register" ? "active" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Cadastrar
+          </button>
         </div>
 
-        {/* Register Form */}
-        <div className="auth-form-box register">
-          {regSuccess ? (
-            <div className="w-full text-center space-y-3">
+        {/* Conteúdo */}
+        <div className="auth-card-body">
+          {mode === "login" ? (
+            <form onSubmit={doLogin} className="w-full space-y-4">
+              <h2 className="text-xl font-bold mb-1">Entrar</h2>
+
+              {loginErr && (
+                <div className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                  {loginErr}
+                </div>
+              )}
+
+              <FieldInput
+                icon={<Mail className="h-4 w-4" />}
+                type="email"
+                placeholder="E-mail"
+                autoComplete="email"
+                value={loginForm.email}
+                onChange={(v) => setLoginForm({ ...loginForm, email: v })}
+              />
+
+              <div className="relative">
+                <input
+                  type={showPass ? "text" : "password"}
+                  placeholder="Senha"
+                  value={loginForm.pass}
+                  autoComplete="current-password"
+                  onChange={(e) =>
+                    setLoginForm({ ...loginForm, pass: e.target.value })
+                  }
+                  className="w-full px-[15px] pr-11 py-[11px] bg-muted rounded-md border border-input outline-none text-sm transition-colors focus:border-primary focus:bg-card placeholder:text-muted-foreground"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPass((v) => !v)}
+                  aria-label={showPass ? "Ocultar senha" : "Mostrar senha"}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showPass ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+
+              <button
+                type="button"
+                className="block w-full text-right text-xs text-muted-foreground hover:text-foreground -mt-2"
+                onClick={() =>
+                  toast.info("Em breve", {
+                    description: "Recuperação de senha disponível em breve.",
+                  })
+                }
+              >
+                Esqueci minha senha
+              </button>
+
+              <button
+                type="submit"
+                disabled={loginBusy}
+                className="w-full h-11 rounded-md bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition disabled:opacity-60"
+              >
+                {loginBusy ? "Entrando…" : "Entrar"}
+              </button>
+
+              <div className="relative py-1">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-border" />
+                </div>
+                <span className="relative flex justify-center text-xs text-muted-foreground">
+                  <span className="bg-card px-2">ou entre com</span>
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleGoogle}
+                className="w-full h-11 rounded-md border border-input bg-background text-sm font-medium hover:bg-muted transition flex items-center justify-center gap-2"
+              >
+                <GoogleIcon className="h-4 w-4" /> Continuar com Google
+              </button>
+            </form>
+          ) : regSuccess ? (
+            <div className="w-full text-center space-y-3 py-4">
               <CheckCircle2 className="h-12 w-12 text-primary mx-auto" />
               <h2 className="text-2xl font-bold">Confira seu e-mail</h2>
               <p className="text-sm text-muted-foreground">
@@ -619,7 +385,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
                 type="button"
                 onClick={() => {
                   setRegSuccess(false);
-                  setIsActive(false);
+                  setMode("login");
                 }}
                 className="mt-4 text-sm text-primary hover:underline"
               >
@@ -628,7 +394,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
             </div>
           ) : (
             <form onSubmit={doRegister} className="w-full space-y-4">
-              <h2 className="text-3xl font-bold mb-2">Cadastro</h2>
+              <h2 className="text-xl font-bold mb-1">Cadastro</h2>
 
               {regErr && (
                 <div className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
@@ -710,41 +476,146 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
             </form>
           )}
         </div>
-
-        {/* Toggle Box */}
-        <div className="auth-toggle-box">
-          <div className="auth-toggle-panel left">
-            <h2 className="text-xl font-semibold mb-1">Novo por aqui?</h2>
-            <p className="text-xs opacity-80 mb-4">
-              Crie sua conta e comece a indicar.
-            </p>
-            <button
-              type="button"
-              onClick={() => setIsActive(true)}
-              aria-pressed={isActive}
-              className="px-5 h-9 rounded-full border border-primary-foreground/60 text-primary-foreground text-xs font-medium hover:bg-primary-foreground/10 transition"
-            >
-              Quero me cadastrar
-            </button>
-          </div>
-
-          <div className="auth-toggle-panel right">
-            <h2 className="text-xl font-semibold mb-1">Já tem conta?</h2>
-            <p className="text-xs opacity-80 mb-4">Acesse sua área.</p>
-            <button
-              type="button"
-              onClick={() => setIsActive(false)}
-              aria-pressed={!isActive}
-              className="px-5 h-9 rounded-full border border-primary-foreground/60 text-primary-foreground text-xs font-medium hover:bg-primary-foreground/10 transition"
-            >
-              Entrar
-            </button>
-          </div>
-        </div>
       </div>
 
-    </main>
+      <style>{`
+        /* Tema escuro + dourado, aplicado apenas na tela de login */
+        .auth-scope {
+          --background: 20 16% 4%;
+          --foreground: 40 32% 96%;
+          --card: 24 14% 9%;
+          --card-foreground: 40 32% 96%;
+          --muted: 26 14% 15%;
+          --muted-foreground: 38 16% 70%;
+          --input: 36 26% 26%;
+          --border: 36 26% 22%;
+          --primary: 38 82% 54%;
+          --primary-foreground: 24 40% 8%;
+          --secondary: 30 60% 40%;
+          --destructive: 4 76% 60%;
+          --warning: 38 92% 56%;
+          color: hsl(var(--foreground));
+          background: radial-gradient(120% 90% at 50% 0%, hsl(26 40% 12%) 0%, hsl(22 30% 6%) 45%, hsl(20 20% 3%) 100%);
+        }
+        .auth-bg {
+          position: absolute;
+          inset: 0;
+          overflow: hidden;
+          pointer-events: none;
+        }
+        .auth-bg-photo {
+          position: absolute;
+          top: 0;
+          right: 0;
+          height: 100%;
+          width: min(80%, 1250px);
+          object-fit: cover;
+          object-position: 70% 12%;
+          filter: contrast(1.35) brightness(1.08) saturate(1.12);
+          opacity: 1;
+          -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 46%, #000 100%),
+                              linear-gradient(180deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+          -webkit-mask-composite: source-in;
+          mask-image: linear-gradient(90deg, transparent 0%, #000 46%, #000 100%),
+                      linear-gradient(180deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+          mask-composite: intersect;
+        }
+        .auth-bg-veil {
+          position: absolute;
+          inset: 0;
+          background:
+            radial-gradient(70% 80% at 88% 35%, hsl(32 90% 55% / 0.08) 0%, transparent 55%),
+            radial-gradient(60% 55% at 18% 40%, hsl(32 95% 55% / 0.12) 0%, transparent 70%),
+            linear-gradient(90deg, hsl(20 25% 3% / 0.94) 0%, hsl(20 25% 3% / 0.60) 40%, hsl(20 22% 3% / 0.18) 60%, hsl(20 20% 2% / 0.30) 100%),
+            linear-gradient(180deg, hsl(20 25% 3% / 0.55) 0%, transparent 26%, transparent 74%, hsl(20 20% 2% / 0.94) 100%);
+        }
+        .auth-bg-embers {
+          position: absolute;
+          inset: -10%;
+          background:
+            radial-gradient(2px 2px at 12% 78%, hsl(35 100% 62% / 0.85), transparent 60%),
+            radial-gradient(2px 2px at 82% 66%, hsl(28 100% 58% / 0.8), transparent 60%),
+            radial-gradient(1.5px 1.5px at 30% 40%, hsl(40 100% 65% / 0.7), transparent 60%),
+            radial-gradient(2.5px 2.5px at 68% 86%, hsl(24 100% 55% / 0.75), transparent 60%),
+            radial-gradient(1.5px 1.5px at 55% 20%, hsl(42 100% 70% / 0.6), transparent 60%),
+            radial-gradient(2px 2px at 90% 30%, hsl(30 100% 60% / 0.55), transparent 60%);
+          animation: auth-embers 14s ease-in-out infinite alternate;
+        }
+        @keyframes auth-embers {
+          from { transform: translate3d(0, 0, 0); opacity: 0.75; }
+          to   { transform: translate3d(0, -28px, 0); opacity: 1; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .auth-bg-embers { animation: none; }
+        }
+        .auth-logo-ring {
+          padding: 4px;
+          border-radius: 50%;
+          background: conic-gradient(from 0deg, hsl(44 92% 62%), hsl(32 88% 48%), hsl(44 92% 62%));
+          box-shadow: 0 8px 28px hsl(32 90% 50% / 0.35), inset 0 0 16px hsl(32 90% 50% / 0.15);
+        }
+        .auth-logo-img {
+          border-radius: 50%;
+          background: hsl(20 20% 5%);
+        }
+        .auth-header {
+          padding: 0;
+          background: transparent;
+          border: none;
+          box-shadow: none;
+          backdrop-filter: none;
+        }
+        .auth-title {
+          background: linear-gradient(180deg, hsl(46 98% 88%), hsl(34 92% 58%));
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+          filter: drop-shadow(0 2px 10px hsl(32 90% 45% / 0.35));
+        }
+        .auth-subtitle {
+          color: hsl(40 40% 88%);
+          text-shadow: 0 1px 12px hsl(20 20% 2% / 0.9), 0 1px 3px hsl(20 20% 2% / 0.6);
+        }
 
+        .auth-card {
+          background: hsl(24 14% 9% / 0.86);
+          backdrop-filter: blur(14px);
+          border: 1px solid hsl(38 60% 55% / 0.22);
+          border-radius: 20px;
+          box-shadow: 0 24px 60px hsl(20 40% 2% / 0.7), 0 0 0 1px hsl(38 80% 60% / 0.06);
+          padding: 28px 32px 32px;
+        }
+        .auth-tabs {
+          border-bottom: 1px solid hsl(36 26% 22%);
+        }
+        .auth-tab {
+          position: relative;
+          color: hsl(38 16% 70%);
+        }
+        .auth-tab.active {
+          color: hsl(46 98% 88%);
+        }
+        .auth-tab.active::after {
+          content: '';
+          position: absolute;
+          bottom: -1px;
+          left: 20%;
+          right: 20%;
+          height: 2px;
+          background: linear-gradient(90deg, transparent, hsl(38 90% 60%), transparent);
+          border-radius: 999px;
+        }
+        .auth-card-body {
+          padding-top: 8px;
+        }
+
+        @media screen and (max-width: 640px) {
+          .auth-card {
+            padding: 22px 20px 26px;
+          }
+        }
+      `}</style>
+    </main>
   );
 }
 
