@@ -1,0 +1,652 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { z } from "zod";
+import { toast } from "sonner";
+import {
+  Mail,
+  Lock,
+  User,
+  Phone,
+  Eye,
+  EyeOff,
+  Sparkles,
+  CheckCircle2,
+  Crown,
+} from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useBranding } from "@/hooks/useBranding";
+
+const emailSchema = z.string().trim().email("E-mail inválido").max(255);
+const passSchema = z.string().min(6, "Mínimo 6 caracteres").max(100);
+
+const RegisterSchema = z.object({
+  full_name: z.string().trim().min(2, "Informe seu nome completo").max(120),
+  email: z.string().trim().toLowerCase().email("E-mail inválido").max(255),
+  phone: z
+    .string()
+    .trim()
+    .max(32)
+    .optional()
+    .or(z.literal(""))
+    .refine(
+      (v) => !v || v.replace(/\D/g, "").length >= 10,
+      "Telefone deve ter DDD + número (mín. 10 dígitos)",
+    ),
+});
+
+function GoogleIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 48 48" className={className} aria-hidden>
+      <path
+        fill="#FFC107"
+        d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 35.5 24 35.5c-6.4 0-11.5-5.1-11.5-11.5S17.6 12.5 24 12.5c2.9 0 5.6 1.1 7.6 2.9l5.7-5.7C33.7 6.4 29.1 4.5 24 4.5 13.2 4.5 4.5 13.2 4.5 24S13.2 43.5 24 43.5c10.8 0 19.5-8.7 19.5-19.5 0-1.2-.1-2.3-.4-3.5z"
+      />
+      <path
+        fill="#FF3D00"
+        d="M6.3 14.7l6.6 4.8C14.6 16 19 13 24 13c2.9 0 5.6 1.1 7.6 2.9l5.7-5.7C33.7 6.9 29.1 5 24 5 16.3 5 9.6 9.3 6.3 14.7z"
+      />
+      <path
+        fill="#4CAF50"
+        d="M24 43c5 0 9.6-1.9 13-5l-6-5.1C29.1 34.5 26.7 35.5 24 35.5c-5.3 0-9.7-3.1-11.3-7.5l-6.5 5C9.5 38.7 16.2 43 24 43z"
+      />
+      <path
+        fill="#1976D2"
+        d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.3 5.7l6 5.1c4.2-3.9 6.5-9.6 6.5-15.8 0-1.2-.1-2.3-.4-3.5z"
+      />
+    </svg>
+  );
+}
+
+interface AuthSliderProps {
+  initialMode?: "login" | "register";
+}
+
+export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
+  const { user, profile, loading } = useAuth();
+  const { data: branding } = useBranding();
+  const navigate = useNavigate();
+
+  const [isActive, setIsActive] = useState(initialMode === "register");
+
+  // Login state
+  const [loginForm, setLoginForm] = useState({ email: "", pass: "" });
+  const [showPass, setShowPass] = useState(false);
+  const [loginBusy, setLoginBusy] = useState(false);
+  const [loginErr, setLoginErr] = useState("");
+
+  // Register state
+  const [regForm, setRegForm] = useState({
+    full_name: "",
+    email: "",
+    phone: "",
+    password: "",
+  });
+  const [showRegPass, setShowRegPass] = useState(false);
+  const [regBusy, setRegBusy] = useState(false);
+  const [regErr, setRegErr] = useState<string | null>(null);
+  const [regSuccess, setRegSuccess] = useState(false);
+
+  // Detecta projeto vazio (1º cadastro vira admin)
+  const [isFirstUser, setIsFirstUser] = useState(false);
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const { count, error } = await supabase
+        .from("profiles")
+        .select("id", { count: "exact", head: true });
+      if (!active || error) return;
+      setIsFirstUser((count ?? 0) === 0);
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  // Redirect after auth
+  useEffect(() => {
+    if (loading || !user) return;
+    if (profile) {
+      navigate(profile.role === "admin" ? "/admin" : "/app", { replace: true });
+      return;
+    }
+    const t = setTimeout(async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (!data) {
+        await supabase.auth.signOut();
+        toast.error("Cadastro não encontrado", {
+          description:
+            "Para participar do programa, faça sua inscrição em 'Quero ser indicador'.",
+        });
+      }
+    }, 2500);
+    return () => clearTimeout(t);
+  }, [user, profile, loading, navigate]);
+
+  const doLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginErr("");
+    try {
+      emailSchema.parse(loginForm.email);
+      passSchema.parse(loginForm.pass);
+    } catch (err) {
+      const m =
+        err instanceof z.ZodError ? err.issues[0]?.message : "Dados inválidos";
+      setLoginErr(m || "Dados inválidos");
+      return;
+    }
+    setLoginBusy(true);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: loginForm.email,
+      password: loginForm.pass,
+    });
+    setLoginBusy(false);
+    if (error) setLoginErr(error.message || "Erro ao fazer login");
+  };
+
+  const handleGoogle = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/` },
+    });
+  };
+
+  const doRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRegErr(null);
+    const parsed = RegisterSchema.safeParse(regForm);
+    if (!parsed.success) {
+      setRegErr(parsed.error.issues[0]?.message ?? "Dados inválidos");
+      return;
+    }
+    if (isFirstUser) {
+      try {
+        passSchema.parse(regForm.password);
+      } catch (err) {
+        const m =
+          err instanceof z.ZodError
+            ? err.issues[0]?.message
+            : "Senha inválida";
+        setRegErr(m || "Senha inválida");
+        return;
+      }
+    }
+    setRegBusy(true);
+    try {
+      const { data, error: fnErr } = await supabase.functions.invoke(
+        "submit-referrer-signup",
+        {
+          body: {
+            full_name: parsed.data.full_name,
+            email: parsed.data.email,
+            phone: parsed.data.phone || null,
+            app_url: window.location.origin,
+            ...(isFirstUser ? { password: regForm.password } : {}),
+          },
+        },
+      );
+      const errCode = (data as any)?.error as string | undefined;
+      if (errCode || fnErr) {
+        const map: Record<string, string> = {
+          email_already_registered:
+            "Este e-mail já está cadastrado. Faça login.",
+          resend_not_configured:
+            "Envio de e-mail não está configurado. Avise o administrador.",
+          email_send_failed:
+            "Não foi possível enviar o e-mail de confirmação. Tente novamente em instantes.",
+          insert_failed: "Erro ao registrar seu cadastro. Tente novamente.",
+          update_failed: "Erro ao atualizar seu cadastro. Tente novamente.",
+          invalid_body: "Dados inválidos. Confira os campos.",
+          password_required_for_bootstrap:
+            "Defina uma senha para criar a conta de administrador.",
+          bootstrap_failed:
+            "Não foi possível criar a conta de administrador. Tente novamente.",
+        };
+        setRegErr(
+          map[errCode ?? ""] ?? errCode ?? fnErr?.message ?? "Erro ao enviar.",
+        );
+        return;
+      }
+      // Bootstrap do 1º admin: faz login automático
+      if ((data as any)?.bootstrap_admin) {
+        const { error: signErr } = await supabase.auth.signInWithPassword({
+          email: parsed.data.email,
+          password: regForm.password,
+        });
+        if (signErr) {
+          toast.error("Conta criada, mas falhou ao entrar", {
+            description: "Tente fazer login manualmente.",
+          });
+          setIsActive(false);
+          return;
+        }
+        toast.success("Bem-vindo, administrador!");
+        return;
+      }
+      setRegSuccess(true);
+    } catch (err) {
+      setRegErr((err as Error).message);
+    } finally {
+      setRegBusy(false);
+    }
+  };
+
+  const companyName = branding?.companyName ?? "Indica+";
+  const logo = branding?.logoUrl;
+
+  return (
+    <main className="min-h-screen flex flex-col items-center justify-center px-4 py-6 bg-muted/30">
+      <div className="flex flex-col items-center gap-3 mb-6">
+        {logo ? (
+          <img
+            src={logo}
+            alt={companyName}
+            className="h-12 w-auto max-w-[180px] object-contain"
+          />
+        ) : (
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+            <Sparkles className="h-6 w-6" />
+          </div>
+        )}
+        <h1 className="text-xl font-semibold tracking-tight">{companyName}</h1>
+      </div>
+
+      {isFirstUser && (
+        <div className="mb-6 flex w-full max-w-content items-start gap-3 rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 text-left">
+          <Crown className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
+          <div className="text-sm">
+            <p className="font-semibold text-foreground">
+              Bem-vindo ao seu novo programa de indicações!
+            </p>
+            <p className="text-muted-foreground">
+              O primeiro a se cadastrar será o administrador. Use o formulário
+              de cadastro ao lado.
+            </p>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        .auth-container {
+          position: relative;
+          width: 850px;
+          max-width: 100%;
+          height: 550px;
+          background: hsl(var(--card));
+          border-radius: 30px;
+          box-shadow: 0 8px 32px hsl(var(--foreground) / 0.12);
+          overflow: hidden;
+        }
+        .auth-form-box {
+          position: absolute;
+          right: 0;
+          width: 50%;
+          height: 100%;
+          background: hsl(var(--card));
+          display: flex;
+          align-items: center;
+          color: hsl(var(--foreground));
+          text-align: center;
+          padding: 40px;
+          z-index: 1;
+          transition: 0.6s ease-in-out 1.2s, visibility 0s 1s;
+        }
+        .auth-container.active .auth-form-box {
+          right: 50%;
+        }
+        .auth-form-box.register {
+          visibility: hidden;
+        }
+        .auth-container.active .auth-form-box.register {
+          visibility: visible;
+        }
+        .auth-toggle-box {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+        }
+        .auth-toggle-box::before {
+          content: '';
+          position: absolute;
+          left: -250%;
+          width: 300%;
+          height: 100%;
+          background: hsl(var(--primary));
+          border-radius: 150px;
+          z-index: 2;
+          transition: 1.8s ease-in-out;
+        }
+        .auth-container.active .auth-toggle-box::before {
+          left: 50%;
+        }
+        .auth-toggle-panel {
+          position: absolute;
+          width: 50%;
+          height: 100%;
+          color: hsl(var(--primary-foreground));
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          z-index: 2;
+          padding: 0 40px;
+          text-align: center;
+          transition: 0.6s ease-in-out;
+        }
+        .auth-toggle-panel.left {
+          left: 0;
+          transition-delay: 1.2s;
+        }
+        .auth-container.active .auth-toggle-panel.left {
+          left: -50%;
+          transition-delay: 0.6s;
+        }
+        .auth-toggle-panel.right {
+          right: -50%;
+          transition-delay: 0.6s;
+        }
+        .auth-container.active .auth-toggle-panel.right {
+          right: 0;
+          transition-delay: 1.2s;
+        }
+        @media screen and (max-width: 850px) {
+          .auth-container {
+            width: 100%;
+            height: calc(100vh - 160px);
+            min-height: 620px;
+            border-radius: 24px;
+          }
+          .auth-form-box {
+            bottom: 0;
+            width: 100%;
+            height: 70%;
+            padding: 24px;
+          }
+          .auth-container.active .auth-form-box {
+            right: 0;
+            bottom: 30%;
+          }
+          .auth-toggle-box::before {
+            left: 0;
+            top: -270%;
+            width: 100%;
+            height: 300%;
+            border-radius: 20vw;
+          }
+          .auth-container.active .auth-toggle-box::before {
+            left: 0;
+            top: 70%;
+          }
+          .auth-toggle-panel {
+            width: 100%;
+            height: 30%;
+            padding: 16px 24px;
+          }
+          .auth-toggle-panel.left {
+            top: 0;
+          }
+          .auth-container.active .auth-toggle-panel.left {
+            left: 0;
+            top: -30%;
+          }
+          .auth-toggle-panel.right {
+            right: 0;
+            bottom: -30%;
+          }
+          .auth-container.active .auth-toggle-panel.right {
+            bottom: 0;
+          }
+        }
+      `}</style>
+
+      <div className={`auth-container ${isActive ? "active" : ""}`}>
+        {/* Login Form */}
+        <div className="auth-form-box login">
+          <form onSubmit={doLogin} className="w-full space-y-4">
+            <h2 className="text-3xl font-bold mb-2">Entrar</h2>
+
+            {loginErr && (
+              <div className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                {loginErr}
+              </div>
+            )}
+
+            <FieldInput
+              icon={<Mail className="h-4 w-4" />}
+              type="email"
+              placeholder="E-mail"
+              autoComplete="email"
+              value={loginForm.email}
+              onChange={(v) => setLoginForm({ ...loginForm, email: v })}
+            />
+
+            <div className="relative">
+              <input
+                type={showPass ? "text" : "password"}
+                placeholder="Senha"
+                value={loginForm.pass}
+                autoComplete="current-password"
+                onChange={(e) =>
+                  setLoginForm({ ...loginForm, pass: e.target.value })
+                }
+                className="w-full px-[15px] pr-11 py-[11px] bg-muted rounded-md border border-input outline-none text-sm transition-colors focus:border-primary focus:bg-card placeholder:text-muted-foreground"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPass((v) => !v)}
+                aria-label={showPass ? "Ocultar senha" : "Mostrar senha"}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                {showPass ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+
+            <button
+              type="button"
+              className="block w-full text-right text-xs text-muted-foreground hover:text-foreground -mt-2"
+              onClick={() =>
+                toast.info("Em breve", {
+                  description: "Recuperação de senha disponível em breve.",
+                })
+              }
+            >
+              Esqueci minha senha
+            </button>
+
+            <button
+              type="submit"
+              disabled={loginBusy}
+              className="w-full h-11 rounded-md bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition disabled:opacity-60"
+            >
+              {loginBusy ? "Entrando…" : "Entrar"}
+            </button>
+
+            <p className="text-xs text-muted-foreground">ou entre com</p>
+
+            <button
+              type="button"
+              onClick={handleGoogle}
+              className="w-full h-11 rounded-md border border-input bg-background text-sm font-medium hover:bg-muted transition flex items-center justify-center gap-2"
+            >
+              <GoogleIcon className="h-4 w-4" /> Continuar com Google
+            </button>
+          </form>
+        </div>
+
+        {/* Register Form */}
+        <div className="auth-form-box register">
+          {regSuccess ? (
+            <div className="w-full text-center space-y-3">
+              <CheckCircle2 className="h-12 w-12 text-primary mx-auto" />
+              <h2 className="text-2xl font-bold">Confira seu e-mail</h2>
+              <p className="text-sm text-muted-foreground">
+                Enviamos um link de confirmação para{" "}
+                <strong>{regForm.email}</strong>. Clique nele para concluir seu
+                cadastro (válido por 24 horas).
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setRegSuccess(false);
+                  setIsActive(false);
+                }}
+                className="mt-4 text-sm text-primary hover:underline"
+              >
+                Voltar para o login
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={doRegister} className="w-full space-y-4">
+              <h2 className="text-3xl font-bold mb-2">Cadastro</h2>
+
+              {regErr && (
+                <div className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                  {regErr}
+                </div>
+              )}
+
+              <FieldInput
+                icon={<User className="h-4 w-4" />}
+                type="text"
+                placeholder="Nome completo"
+                autoComplete="name"
+                value={regForm.full_name}
+                onChange={(v) => setRegForm({ ...regForm, full_name: v })}
+              />
+              <FieldInput
+                icon={<Mail className="h-4 w-4" />}
+                type="email"
+                placeholder="E-mail"
+                autoComplete="email"
+                value={regForm.email}
+                onChange={(v) => setRegForm({ ...regForm, email: v })}
+              />
+              <FieldInput
+                icon={<Phone className="h-4 w-4" />}
+                type="tel"
+                placeholder="Telefone (opcional)"
+                autoComplete="tel"
+                value={regForm.phone}
+                onChange={(v) => setRegForm({ ...regForm, phone: v })}
+              />
+
+              {isFirstUser && (
+                <div className="relative">
+                  <input
+                    type={showRegPass ? "text" : "password"}
+                    placeholder="Senha (mín. 6 caracteres)"
+                    autoComplete="new-password"
+                    value={regForm.password}
+                    onChange={(e) =>
+                      setRegForm({ ...regForm, password: e.target.value })
+                    }
+                    className="w-full px-[15px] pr-11 py-[11px] bg-muted rounded-md border border-input outline-none text-sm transition-colors focus:border-primary focus:bg-card placeholder:text-muted-foreground"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowRegPass((v) => !v)}
+                    aria-label={
+                      showRegPass ? "Ocultar senha" : "Mostrar senha"
+                    }
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showRegPass ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={regBusy}
+                className="w-full h-11 rounded-md bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition disabled:opacity-60"
+              >
+                {regBusy
+                  ? "Enviando…"
+                  : isFirstUser
+                    ? "Criar conta de administrador"
+                    : "Enviar confirmação"}
+              </button>
+
+              <p className="text-xs text-muted-foreground">
+                {isFirstUser
+                  ? "Como primeiro cadastro, você se torna o administrador da plataforma."
+                  : "Você receberá um e-mail para confirmar e definir sua senha."}
+              </p>
+            </form>
+          )}
+        </div>
+
+        {/* Toggle Box */}
+        <div className="auth-toggle-box">
+          <div className="auth-toggle-panel left">
+            <h2 className="text-3xl font-bold mb-2">Olá, bem-vindo!</h2>
+            <p className="text-sm opacity-90 mb-5">
+              Ainda não tem cadastro como indicador?
+            </p>
+            <button
+              type="button"
+              onClick={() => setIsActive(true)}
+              aria-pressed={isActive}
+              className="w-40 h-11 rounded-md border-2 border-primary-foreground text-primary-foreground text-sm font-semibold hover:bg-primary-foreground/10 transition"
+            >
+              Quero me cadastrar
+            </button>
+          </div>
+
+          <div className="auth-toggle-panel right">
+            <h2 className="text-3xl font-bold mb-2">Bem-vindo de volta!</h2>
+            <p className="text-sm opacity-90 mb-5">Já tem uma conta?</p>
+            <button
+              type="button"
+              onClick={() => setIsActive(false)}
+              aria-pressed={!isActive}
+              className="w-40 h-11 rounded-md border-2 border-primary-foreground text-primary-foreground text-sm font-semibold hover:bg-primary-foreground/10 transition"
+            >
+              Entrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
+
+function FieldInput({
+  icon,
+  ...rest
+}: {
+  icon: React.ReactNode;
+  type: string;
+  placeholder: string;
+  autoComplete?: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div className="relative">
+      <input
+        type={rest.type}
+        placeholder={rest.placeholder}
+        autoComplete={rest.autoComplete}
+        value={rest.value}
+        onChange={(e) => rest.onChange(e.target.value)}
+        className="w-full px-[15px] pr-11 py-[11px] bg-muted rounded-md border border-input outline-none text-sm transition-colors focus:border-primary focus:bg-card placeholder:text-muted-foreground"
+      />
+      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+        {icon}
+      </span>
+    </div>
+  );
+}

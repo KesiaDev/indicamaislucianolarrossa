@@ -1,0 +1,212 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 10%;
+
+    /* Verde vibrante (Duolingo-ish) */
+    --primary: 142 76% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Azul elétrico */
+    --secondary: 217 91% 60%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 46%;
+
+    /* Amarelo mostarda */
+    --accent: 38 92% 55%;
+    --accent-foreground: 240 10% 10%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 76% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 55%;
+    --warning-foreground: 240 10% 10%;
+
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 142 76% 45%;
+
+    /* Hierarquia de superfícies (light) */
+    --surface-1: 0 0% 100%;
+    --surface-2: 240 5% 97%;
+    --elevated: 0 0% 100%;
+
+    --radius: 0.75rem;
+
+    /* Sidebar (admin) — escuro com primary verde */
+    --sidebar-background: 240 10% 8%;
+    --sidebar-foreground: 0 0% 96%;
+    --sidebar-primary: 142 76% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 6% 14%;
+    --sidebar-accent-foreground: 0 0% 96%;
+    --sidebar-border: 240 6% 16%;
+    --sidebar-ring: 142 76% 45%;
+  }
+
+  .dark {
+    --background: 240 10% 8%;
+    --foreground: 0 0% 98%;
+    --card: 240 8% 11%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 8% 11%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 142 70% 50%;
+    --primary-foreground: 240 10% 8%;
+
+    --secondary: 217 91% 60%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 240 5% 15%;
+    --muted-foreground: 240 5% 65%;
+
+    --accent: 38 92% 55%;
+    --accent-foreground: 240 10% 8%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 142 70% 50%;
+    --success-foreground: 240 10% 8%;
+
+    --warning: 38 92% 55%;
+    --warning-foreground: 240 10% 8%;
+
+    --border: 240 5% 20%;
+    --input: 240 5% 20%;
+    --ring: 142 70% 50%;
+
+    /* Hierarquia de superfícies (dark) */
+    --surface-1: 240 8% 11%;
+    --surface-2: 240 6% 14%;
+    --elevated: 240 8% 13%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html,
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    @apply font-medium;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   Animated split-panel auth (login/cadastro)
+   ============================================================ */
+@layer components {
+  .auth-wrap {
+    @apply min-h-screen flex items-center justify-center flex-col gap-6 bg-muted p-4;
+  }
+
+  .ac {
+    position: relative;
+    width: 100%;
+    max-width: 860px;
+    height: 560px;
+    background: hsl(var(--card));
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 8px 48px rgba(2, 22, 42, 0.18);
+  }
+
+  .afb {
+    position: absolute;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    background: hsl(var(--card));
+    display: flex;
+    align-items: center;
+    text-align: center;
+    padding: 2.75rem;
+    z-index: 10;
+    transition: 0.6s ease-in-out 1.2s, visibility 0s 1s;
+  }
+  .ac.active .afb { right: 50%; }
+  .afb.reg { visibility: hidden; }
+  .ac.active .afb.reg { visibility: visible; }
+
+  .atb {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+  .atb::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background: hsl(var(--primary));
+    z-index: 20;
+    left: -250%;
+    width: 300%;
+    border-radius: 150px;
+    transition: 1.8s ease-in-out;
+  }
+  .ac.active .atb::before { left: 50%; }
+
+  .atp {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    color: hsl(var(--primary-foreground));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+    padding: 2.5rem;
+    text-align: center;
+  }
+  .atp.l { left: 0; transition: 0.6s ease-in-out; transition-delay: 1.2s; }
+  .ac.active .atp.l { left: -50%; transition-delay: 0.6s; }
+  .atp.r { right: -50%; transition: 0.6s ease-in-out; transition-delay: 0.6s; }
+  .ac.active .atp.r { right: 0; transition-delay: 1.2s; }
+
+  @media (max-width: 768px) {
+    .ac { height: auto; min-height: 560px; display: flex; flex-direction: column; }
+    .afb { position: relative; width: 100%; height: auto; padding: 2rem 1.5rem; transition: none; }
+    .afb.reg { display: none; }
+    .ac.active .afb:not(.reg) { display: none; }
+    .ac.active .afb.reg { display: flex; right: 0; }
+    .atb { display: none; }
+  }
+}
