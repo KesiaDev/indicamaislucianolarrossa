@@ -242,7 +242,7 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
   const logo = branding?.logoUrl;
 
   return (
-    <main className="auth-scope relative min-h-screen flex flex-col items-center justify-end overflow-hidden px-4 pb-10 pt-28">
+    <main className="auth-scope relative min-h-screen flex flex-col items-start justify-end overflow-hidden px-4 pb-10 pt-28 pl-[6%] md:pl-[10%] lg:pl-[14%]">
       {/* Fundo: retrato do mentor + camadas escuras e douradas */}
       <div className="auth-bg" aria-hidden>
         <img src={mentorPhoto} alt="" className="auth-bg-photo" />
@@ -361,14 +361,11 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           background: hsl(20 20% 5%);
         }
         .auth-header {
-          padding: 22px 44px 26px;
-          border-radius: 24px;
-          border: 1px solid hsl(38 60% 55% / 0.22);
-          background:
-            radial-gradient(120% 100% at 50% 0%, hsl(32 60% 20% / 0.35) 0%, transparent 70%),
-            linear-gradient(180deg, hsl(20 20% 3% / 0.78) 0%, hsl(20 20% 3% / 0.55) 100%);
-          backdrop-filter: blur(10px);
-          box-shadow: 0 18px 50px hsl(20 30% 2% / 0.55);
+          padding: 0;
+          background: transparent;
+          border: none;
+          box-shadow: none;
+          backdrop-filter: none;
         }
         .auth-title {
           background: linear-gradient(180deg, hsl(46 98% 88%), hsl(34 92% 58%));
