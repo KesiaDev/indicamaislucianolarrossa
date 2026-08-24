@@ -3,6 +3,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { z } from "https://esm.sh/zod@3.23.8";
 import { corsHeaders } from "../_shared/cors.ts";
 import { notifyEvent } from "../_shared/notify.ts";
+import { createClintDeal } from "../_shared/clint.ts";
 
 const Body = z.object({
   code: z.string().min(1).max(120),
@@ -70,6 +71,32 @@ Deno.serve(async (req) => {
       variant_id: variant_id ?? null,
     });
     if (error) throw error;
+
+    // Pontos por indicação registada (10 pontos)
+    const { data: referrer } = await supabase
+      .from("profiles")
+      .select("total_points, full_name, email")
+      .eq("id", (link as any).referrer_id)
+      .maybeSingle();
+    if (referrer) {
+      await supabase
+        .from("profiles")
+        .update({ total_points: ((referrer as any).total_points ?? 0) + 10 })
+        .eq("id", (link as any).referrer_id);
+      await supabase.rpc("recompute_tier", { _profile_id: (link as any).referrer_id });
+    }
+
+    // Best-effort: cria o negócio no funil de indicados da Clint
+    await createClintDeal({
+      name: lead_name,
+      email: lead_email || null,
+      phone: lead_phone || null,
+      fields: {
+        indicado_por: (referrer as any)?.full_name ?? (referrer as any)?.email ?? "",
+        campanha: (link as any).campaigns?.name ?? "",
+        codigo_indicacao: code,
+      },
+    });
 
     // Best-effort: notifica o indicador
     await notifyEvent({
