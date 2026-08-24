@@ -3,6 +3,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { z } from "https://esm.sh/zod@3.23.8";
 import { corsHeaders } from "../_shared/cors.ts";
 import { notifyEvent } from "../_shared/notify.ts";
+import { createClintDeal } from "../_shared/clint.ts";
 
 const Body = z.object({
   code: z.string().min(1).max(120),
