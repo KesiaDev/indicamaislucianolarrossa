@@ -30,7 +30,7 @@ interface Props {
   onClose: () => void;
 }
 
-const STEPS = ["Marca", "Seu perfil", "Webhook de conversão", "E-mails (Resend)", "WhatsApp"] as const;
+const STEPS = ["Marca", "Seu perfil", "Webhook de conversão", "E-mails", "WhatsApp"] as const;
 
 const PROJECT_ID = import.meta.env.VITE_SUPABASE_PROJECT_ID as string;
 const WEBHOOK_URL = `https://${PROJECT_ID}.supabase.co/functions/v1/conversion-webhook`;
@@ -62,11 +62,6 @@ export function AdminSetupWizard({ open, onClose }: Props) {
   const [showSecret, setShowSecret] = useState(false);
   const [skipWebhook, setSkipWebhook] = useState(false);
 
-  // Step 3: Resend
-  const [resendKey, setResendKey] = useState("");
-  const [resendFrom, setResendFrom] = useState("");
-  const [showResendKey, setShowResendKey] = useState(false);
-  const [skipResend, setSkipResend] = useState(false);
 
   // Step 4: WhatsApp
   const [clintApiKey, setClintApiKey] = useState("");
@@ -200,19 +195,7 @@ export function AdminSetupWizard({ open, onClose }: Props) {
         if (error) throw new Error(`Webhook: ${error.message}`);
       }
 
-      // 4) Resend
-      if (!skipResend && resendKey.trim() && resendFrom.trim()) {
-        const { error: e1 } = await supabase.rpc("set_vault_secret" as any, {
-          p_name: "RESEND_API_KEY",
-          p_value: resendKey.trim(),
-        });
-        if (e1) throw new Error(`Resend: ${e1.message}`);
-        const { error: e2 } = await supabase.rpc("set_vault_secret" as any, {
-          p_name: "RESEND_FROM",
-          p_value: resendFrom.trim(),
-        });
-        if (e2) throw new Error(`Resend: ${e2.message}`);
-      }
+      // 4) E-mails: geridos pelo conector Resend (nada a guardar)
 
       // 5) WhatsApp (opcional)
       if (!skipWhatsapp) {
@@ -259,10 +242,7 @@ export function AdminSetupWizard({ open, onClose }: Props) {
   const canNext0 = companyName.trim().length >= 2;
   const canNext1 = fullName.trim().length >= 2;
   const canNext2 = skipWebhook || webhookSecret.trim().length >= 16;
-  const canNext3 =
-    skipResend ||
-    (resendKey.trim().length === 0 && resendFrom.trim().length === 0) ||
-    (resendKey.trim().length > 10 && /\S+@\S+\.\S+/.test(resendFrom.trim()));
+  const canNext3 = true;
   const canFinish =
     skipWhatsapp ||
     (clintApiKey.trim().length > 0 && clintChannelId.trim().length > 0);
