@@ -227,7 +227,7 @@ Deno.serve(async (req) => {
       // Carrega template
       const { data: tpl } = await supabase
         .from("notification_templates")
-        .select("subject, body")
+        .select("subject, body, whatsapp_template")
         .eq("event_key", event_key)
         .eq("channel", channel)
         .maybeSingle();
@@ -235,6 +235,7 @@ Deno.serve(async (req) => {
       if (!tpl || !(tpl as any).body) {
         return json({ error: "template_not_found", event_key, channel }, 404);
       }
+      whatsappTemplateName = ((tpl as any).whatsapp_template ?? "").trim() || null;
 
       // Enriquecer data com nome do indicador / company
       const data = { ...(template.data ?? {}) } as Record<string, unknown>;
