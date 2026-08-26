@@ -1,6 +1,7 @@
 import * as React from 'npm:react@18.3.1'
 import { renderAsync } from 'npm:@react-email/components@0.0.22'
-import { createAuthEmailHandler } from 'npm:@lovable.dev/email-js@0.1.0'
+import { WebhookError, verifyWebhookRequest } from 'npm:@lovable.dev/webhooks-js@0.1.0'
+import { sendEmail } from '../_shared/resend.ts'
 import { SignupEmail } from '../_shared/email-templates/signup.tsx'
 import { InviteEmail } from '../_shared/email-templates/invite.tsx'
 import { MagicLinkEmail } from '../_shared/email-templates/magic-link.tsx'
@@ -16,9 +17,7 @@ const corsHeaders = {
 
 // Configuration
 const SITE_NAME = "Programa Indica + Luciano Larrossa"
-const SENDER_DOMAIN = "notify.llmidiaco.com"
-const ROOT_DOMAIN = "llmidiaco.com"
-const FROM_DOMAIN = "notify.llmidiaco.com"
+const ROOT_DOMAIN = "lucianolarrossa.com"
 const SITE_URL = `https://${ROOT_DOMAIN}`
 
 // Template mapping for preview mode
