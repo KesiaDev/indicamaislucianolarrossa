@@ -407,6 +407,36 @@ Deno.serve(async (req) => {
                 console.error("clint send failed", channelAccountId, res.status, JSON.stringify(respJson));
                 errorMessage = (respJson as any)?.message || `clint_${res.status}`;
               }
+
+              // Janela de 24h fechada (regra da Meta): a 1ª mensagem tem de ser
+              // um template aprovado. Faz fallback para o template configurado.
+              if (errorMessage && /messaging window is closed/i.test(errorMessage)) {
+                if (!whatsappTemplateName) {
+                  errorMessage = "window_closed_no_template";
+                } else {
+                  for (const channelAccountId of candidates) {
+                    const templateId = await clintResolveTemplateId(
+                      apiKey,
+                      channelAccountId,
+                      whatsappTemplateName,
+                    );
+                    if (!templateId) continue;
+                    const sent = await clintSendTemplate(apiKey, channelAccountId, contactId, templateId);
+                    if (sent.ok) {
+                      providerMessageId = sent.messageId ?? null;
+                      errorMessage = null;
+                      logBody = `[template: ${whatsappTemplateName}]\n${logBody}`;
+                      await supabase
+                        .from("clint_channel_accounts")
+                        .update({ last_used_at: new Date().toISOString() })
+                        .eq("id", channelAccountId);
+                      break;
+                    }
+                    console.error("clint template send failed", channelAccountId, sent.error);
+                    errorMessage = sent.error ?? "clint_template_failed";
+                  }
+                }
+              }
             }
           } catch (err) {
             console.error("clint error", err);
