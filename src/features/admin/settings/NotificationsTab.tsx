@@ -27,6 +27,7 @@ type Template = {
   channel: Channel;
   subject: string | null;
   body: string;
+  whatsapp_template?: string | null;
 };
 
 type EventDef = {
@@ -272,6 +273,7 @@ function TemplateEditor({
   const { profile } = useAuth();
   const [subject, setSubject] = useState(template?.subject ?? "");
   const [body, setBody] = useState(template?.body ?? "");
+  const [waTemplate, setWaTemplate] = useState(template?.whatsapp_template ?? "");
   const [testTo, setTestTo] = useState("");
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
@@ -279,7 +281,8 @@ function TemplateEditor({
   useEffect(() => {
     setSubject(template?.subject ?? "");
     setBody(template?.body ?? "");
-  }, [template?.subject, template?.body]);
+    setWaTemplate(template?.whatsapp_template ?? "");
+  }, [template?.subject, template?.body, template?.whatsapp_template]);
 
   const insertPlaceholder = (ph: string) => {
     setBody((prev) => prev + (prev.endsWith(" ") || prev === "" ? "" : " ") + ph);
@@ -295,6 +298,7 @@ function TemplateEditor({
           channel,
           subject: channel === "email" ? subject : null,
           body,
+          whatsapp_template: channel === "whatsapp" ? (waTemplate.trim() || null) : null,
         });
       if (error) throw error;
       toast.success("Template salvo");
@@ -383,11 +387,29 @@ function TemplateEditor({
 
         {channel === "whatsapp" && (
           <div>
+            <Label className="text-xs">Template da Clint (1ª mensagem)</Label>
+            <Input
+              value={waTemplate}
+              onChange={(e) => setWaTemplate(e.target.value)}
+              placeholder="Ex.: indica_convite"
+              className="font-mono text-xs"
+            />
+            <p className="text-[11px] text-muted-foreground mt-1">
+              Regra da Meta: fora da janela de 24h só é possível enviar um{" "}
+              <strong>template aprovado</strong>. Indique aqui o nome do template
+              (exatamente como está na Clint). Se o contato já falou contigo nas
+              últimas 24h, é enviado o texto livre acima.
+            </p>
+          </div>
+        )}
+
+        {channel === "whatsapp" && (
+          <div>
             <Label className="text-xs">Telefone para teste (opcional)</Label>
             <Input
               value={testTo}
               onChange={(e) => setTestTo(e.target.value)}
-              placeholder="+5511999999999"
+              placeholder="+351912345678"
             />
             <p className="text-[11px] text-muted-foreground mt-1">
               Se vazio, usa o telefone do seu perfil.

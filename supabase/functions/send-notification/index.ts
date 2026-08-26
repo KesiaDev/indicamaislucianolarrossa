@@ -83,6 +83,49 @@ async function clintResolveContact(
   return ((created as any)?.id ?? (created as any)?.data?.id ?? null) as string | null;
 }
 
+// Resolve o UUID de um template APROVADO pelo nome, para um número (channel account).
+async function clintResolveTemplateId(
+  apiKey: string,
+  channelAccountId: string,
+  name: string,
+): Promise<string | null> {
+  const res = await fetch(
+    `${CLINT_BASE}/v2/message-templates?channel_account_id=${encodeURIComponent(channelAccountId)}&limit=100`,
+    { headers: { "Content-Type": "application/json", "api-token": apiKey } },
+  );
+  if (!res.ok) {
+    console.error("clint templates list failed", res.status, await res.text());
+    return null;
+  }
+  const payload = await res.json().catch(() => ({}));
+  const list = ((payload as any)?.data ?? []) as any[];
+  const tpl = list.find((t) => t?.name === name && t?.status === "APPROVED");
+  return (tpl?.id ?? null) as string | null;
+}
+
+// Envia um template aprovado (necessário fora da janela de 24h da Meta).
+async function clintSendTemplate(
+  apiKey: string,
+  channelAccountId: string,
+  contactId: string,
+  templateId: string,
+): Promise<{ ok: boolean; messageId?: string | null; error?: string }> {
+  const res = await fetch(`${CLINT_BASE}/v2/messages/template`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "api-token": apiKey },
+    body: JSON.stringify({
+      channel_account_id: channelAccountId,
+      contact_id: contactId,
+      template_id: templateId,
+    }),
+  });
+  const payload = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    return { ok: false, error: (payload as any)?.message || `clint_template_${res.status}` };
+  }
+  return { ok: true, messageId: (payload as any)?.data?.message_id ?? null };
+}
+
 
 // --- E.164 normalization (PT-aware, com fallback BR) ---
 function toE164(phone: string | null | undefined): string | null {
@@ -203,6 +246,7 @@ Deno.serve(async (req) => {
     let resolvedSubject = subject ?? null;
     let resolvedBody = body ?? "";
     let isEvent = false;
+    let whatsappTemplateName: string | null = null;
 
     if (template?.kind === "event") {
       isEvent = true;
@@ -227,7 +271,7 @@ Deno.serve(async (req) => {
       // Carrega template
       const { data: tpl } = await supabase
         .from("notification_templates")
-        .select("subject, body")
+        .select("subject, body, whatsapp_template")
         .eq("event_key", event_key)
         .eq("channel", channel)
         .maybeSingle();
@@ -235,6 +279,7 @@ Deno.serve(async (req) => {
       if (!tpl || !(tpl as any).body) {
         return json({ error: "template_not_found", event_key, channel }, 404);
       }
+      whatsappTemplateName = ((tpl as any).whatsapp_template ?? "").trim() || null;
 
       // Enriquecer data com nome do indicador / company
       const data = { ...(template.data ?? {}) } as Record<string, unknown>;
@@ -361,6 +406,36 @@ Deno.serve(async (req) => {
                 }
                 console.error("clint send failed", channelAccountId, res.status, JSON.stringify(respJson));
                 errorMessage = (respJson as any)?.message || `clint_${res.status}`;
+              }
+
+              // Janela de 24h fechada (regra da Meta): a 1ª mensagem tem de ser
+              // um template aprovado. Faz fallback para o template configurado.
+              if (errorMessage && /messaging window is closed/i.test(errorMessage)) {
+                if (!whatsappTemplateName) {
+                  errorMessage = "window_closed_no_template";
+                } else {
+                  for (const channelAccountId of candidates) {
+                    const templateId = await clintResolveTemplateId(
+                      apiKey,
+                      channelAccountId,
+                      whatsappTemplateName,
+                    );
+                    if (!templateId) continue;
+                    const sent = await clintSendTemplate(apiKey, channelAccountId, contactId, templateId);
+                    if (sent.ok) {
+                      providerMessageId = sent.messageId ?? null;
+                      errorMessage = null;
+                      logBody = `[template: ${whatsappTemplateName}]\n${logBody}`;
+                      await supabase
+                        .from("clint_channel_accounts")
+                        .update({ last_used_at: new Date().toISOString() })
+                        .eq("id", channelAccountId);
+                      break;
+                    }
+                    console.error("clint template send failed", channelAccountId, sent.error);
+                    errorMessage = sent.error ?? "clint_template_failed";
+                  }
+                }
               }
             }
           } catch (err) {
