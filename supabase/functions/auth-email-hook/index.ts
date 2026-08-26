@@ -1,6 +1,7 @@
 import * as React from 'npm:react@18.3.1'
 import { renderAsync } from 'npm:@react-email/components@0.0.22'
-import { createAuthEmailHandler } from 'npm:@lovable.dev/email-js@0.1.0'
+import { WebhookError, verifyWebhookRequest } from 'npm:@lovable.dev/webhooks-js@0.0.2'
+import { sendEmail } from '../_shared/resend.ts'
 import { SignupEmail } from '../_shared/email-templates/signup.tsx'
 import { InviteEmail } from '../_shared/email-templates/invite.tsx'
 import { MagicLinkEmail } from '../_shared/email-templates/magic-link.tsx'
@@ -16,9 +17,7 @@ const corsHeaders = {
 
 // Configuration
 const SITE_NAME = "Programa Indica + Luciano Larrossa"
-const SENDER_DOMAIN = "notify.llmidiaco.com"
-const ROOT_DOMAIN = "llmidiaco.com"
-const FROM_DOMAIN = "notify.llmidiaco.com"
+const ROOT_DOMAIN = "lucianolarrossa.com"
 const SITE_URL = `https://${ROOT_DOMAIN}`
 
 // Template mapping for preview mode
@@ -120,67 +119,125 @@ async function handlePreview(req: Request): Promise<Response> {
   })
 }
 
-// The SDK handler owns verification, dispatch, and retry semantics; this file
-// owns only the email decisions: subjects, templates, and per-type props.
-const handler = createAuthEmailHandler({
-  apiKey: Deno.env.get('LOVABLE_API_KEY')!,
-  from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
-  senderDomain: SENDER_DOMAIN,
-  sendUrl: Deno.env.get('LOVABLE_SEND_URL'),
-  emails: {
-    signup: {
-      subject: 'Confirm your email',
-      render: (data) =>
-        React.createElement(SignupEmail, {
-          siteName: SITE_NAME,
-          siteUrl: SITE_URL,
-          recipient: data.email,
-          confirmationUrl: data.url,
-        }),
-    },
-    invite: {
-      subject: "You've been invited",
-      render: (data) =>
-        React.createElement(InviteEmail, {
-          siteName: SITE_NAME,
-          siteUrl: SITE_URL,
-          confirmationUrl: data.url,
-        }),
-    },
-    magiclink: {
-      subject: 'Your login link',
-      render: (data) =>
-        React.createElement(MagicLinkEmail, {
-          siteName: SITE_NAME,
-          confirmationUrl: data.url,
-        }),
-    },
-    recovery: {
-      subject: 'Reset your password',
-      render: (data) =>
-        React.createElement(RecoveryEmail, {
-          siteName: SITE_NAME,
-          confirmationUrl: data.url,
-        }),
-    },
-    email_change: {
-      subject: 'Confirm your new email',
-      render: (data) =>
-        React.createElement(EmailChangeEmail, {
-          siteName: SITE_NAME,
-          oldEmail: data.old_email ?? '',
-          email: data.email,
-          newEmail: data.new_email ?? '',
-          confirmationUrl: data.url,
-        }),
-    },
-    reauthentication: {
-      subject: 'Your verification code',
-      render: (data) =>
-        React.createElement(ReauthenticationEmail, { token: data.token ?? '' }),
-    },
+// Verificação do webhook fica a cargo do SDK; o envio é feito pela conta Resend
+// ligada por conector (remetente fixo cursos@lucianolarrossa.com).
+type AuthEmailData = {
+  email: string
+  action_type: string
+  url?: string
+  token?: string
+  old_email?: string
+  new_email?: string
+}
+
+const AUTH_EMAILS: Record<
+  string,
+  { subject: string; render: (data: AuthEmailData) => React.ReactElement }
+> = {
+  signup: {
+    subject: 'Confirma o teu e-mail',
+    render: (data) =>
+      React.createElement(SignupEmail, {
+        siteName: SITE_NAME,
+        siteUrl: SITE_URL,
+        recipient: data.email,
+        confirmationUrl: data.url,
+      }),
   },
-})
+  invite: {
+    subject: 'Foste convidado(a) para o programa de indicações',
+    render: (data) =>
+      React.createElement(InviteEmail, {
+        siteName: SITE_NAME,
+        siteUrl: SITE_URL,
+        confirmationUrl: data.url,
+      }),
+  },
+  magiclink: {
+    subject: 'O teu link de entrada',
+    render: (data) =>
+      React.createElement(MagicLinkEmail, {
+        siteName: SITE_NAME,
+        confirmationUrl: data.url,
+      }),
+  },
+  recovery: {
+    subject: 'Recuperar a tua palavra-passe',
+    render: (data) =>
+      React.createElement(RecoveryEmail, {
+        siteName: SITE_NAME,
+        confirmationUrl: data.url,
+      }),
+  },
+  email_change: {
+    subject: 'Confirma o teu novo e-mail',
+    render: (data) =>
+      React.createElement(EmailChangeEmail, {
+        siteName: SITE_NAME,
+        oldEmail: data.old_email ?? '',
+        email: data.email,
+        newEmail: data.new_email ?? '',
+        confirmationUrl: data.url,
+      }),
+  },
+  reauthentication: {
+    subject: 'O teu código de verificação',
+    render: (data) =>
+      React.createElement(ReauthenticationEmail, { token: data.token ?? '' }),
+  },
+}
+
+async function handleAuthEmail(req: Request): Promise<Response> {
+  const apiKey = Deno.env.get('LOVABLE_API_KEY')
+  if (!apiKey) {
+    return Response.json({ error: 'Missing LOVABLE_API_KEY' }, { status: 500 })
+  }
+
+  let payload: any
+  try {
+    const verified = await verifyWebhookRequest({
+      req,
+      secret: apiKey,
+      parser: (body: string) => JSON.parse(body),
+    })
+    payload = verified.payload
+  } catch (error) {
+    if (error instanceof WebhookError) {
+      return Response.json({ error: error.message }, { status: 401 })
+    }
+    console.error('auth webhook verification failed:', error)
+    return Response.json({ error: 'Webhook verification failed' }, { status: 500 })
+  }
+
+  const data = (payload?.data ?? {}) as AuthEmailData
+  const definition = AUTH_EMAILS[data.action_type]
+  if (!definition) {
+    return Response.json(
+      { error: `Unknown auth email action type: ${data.action_type}` },
+      { status: 400 },
+    )
+  }
+
+  const element = definition.render(data)
+  const html = await renderAsync(element)
+  const text = await renderAsync(element, { plainText: true })
+
+  const sent = await sendEmail({
+    to: data.email,
+    subject: definition.subject,
+    html,
+    text,
+  })
+
+  if (!sent.ok) {
+    return Response.json(
+      { error: 'Failed to send email', status: sent.status, details: sent.error },
+      { status: sent.status === 401 || sent.status === 403 ? 400 : 500 },
+    )
+  }
+
+  return Response.json({ success: true, sent: true })
+}
 
 Deno.serve(async (req) => {
   const url = new URL(req.url)
@@ -195,5 +252,9 @@ Deno.serve(async (req) => {
     return handlePreview(req)
   }
 
-  return handler(req)
+  if (req.method !== 'POST') {
+    return Response.json({ error: 'Method not allowed' }, { status: 405, headers: { Allow: 'POST' } })
+  }
+
+  return handleAuthEmail(req)
 })

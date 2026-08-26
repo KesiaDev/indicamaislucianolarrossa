@@ -7,6 +7,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { z } from "https://esm.sh/zod@3.23.8";
 import { corsHeaders } from "../_shared/cors.ts";
 import { vaultGet } from "../_shared/vault.ts";
+import { sendEmail } from "../_shared/resend.ts";
 import { rewardUnlockedHtml, referrerInviteHtml } from "./templates.ts";
 
 const Body = z.object({
@@ -273,15 +274,6 @@ Deno.serve(async (req) => {
         suppressed = true;
         errorMessage = "suppressed";
       } else {
-        const RESEND_API_KEY = await vaultGet("RESEND_API_KEY");
-        const RESEND_FROM = await vaultGet("RESEND_FROM");
-        if (!RESEND_API_KEY || !RESEND_FROM) {
-          return json({
-            error: "resend_not_configured",
-            missing: { resend_api_key: !RESEND_API_KEY, resend_from: !RESEND_FROM },
-          }, 503);
-        }
-
         let html: string;
         let finalSubject: string;
 
@@ -296,23 +288,9 @@ Deno.serve(async (req) => {
         logSubject = finalSubject;
         logBody = html;
 
-        const res = await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${RESEND_API_KEY}`,
-          },
-          body: JSON.stringify({
-            from: RESEND_FROM,
-            to: [email],
-            subject: finalSubject,
-            html,
-          }),
-        });
-
-        const respJson = await res.json().catch(() => ({}));
-        if (!res.ok) errorMessage = (respJson as any)?.message || `resend_${res.status}`;
-        else providerMessageId = (respJson as any)?.id ?? null;
+        const sent = await sendEmail({ to: email, subject: finalSubject, html });
+        if (!sent.ok) errorMessage = sent.error || `resend_${sent.status}`;
+        else providerMessageId = sent.id;
       }
     } else {
       // WhatsApp via Clint (API Oficial da Meta)

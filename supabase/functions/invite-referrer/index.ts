@@ -2,7 +2,7 @@ import { z } from "https://esm.sh/zod@3.23.8";
 import { corsHeaders } from "../_shared/cors.ts";
 import { requireAdmin } from "../_shared/auth.ts";
 import { notifyEvent } from "../_shared/notify.ts";
-import { vaultGet } from "../_shared/vault.ts";
+
 
 const Body = z.object({
   email: z.string().trim().email().max(255),
@@ -26,16 +26,11 @@ Deno.serve(async (req) => {
     if (!parsed.success) return json({ error: "invalid_body" }, 400);
     const { email, full_name } = parsed.data;
 
-    // 1) Verifica se Resend está configurado — falha clara se não.
-    const [resendKey, resendFrom] = await Promise.all([
-      vaultGet("RESEND_API_KEY"),
-      vaultGet("RESEND_FROM"),
-    ]);
-    if (!resendKey || !resendFrom) {
+    // 1) O envio usa a conta Resend ligada por conector (sem chaves manuais).
+    if (!Deno.env.get("LOVABLE_API_KEY") || !Deno.env.get("RESEND_API_KEY")) {
       return json({
         error: "resend_not_configured",
-        message: "Configure Resend (API key e remetente) em Definições → Integrações antes de enviar convites.",
-        missing: { resend_api_key: !resendKey, resend_from: !resendFrom },
+        message: "A conta Resend não está ligada ao projeto. Liga o conector Resend antes de enviar convites.",
       }, 400);
     }
 

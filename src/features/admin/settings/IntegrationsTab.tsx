@@ -76,74 +76,25 @@ export function IntegrationsTab() {
 
 /* ---------------------- RESEND ---------------------- */
 
-function ResendCard({ status, onChanged }: { status: Status; onChanged: () => void }) {
-  const connected = !!status.RESEND_API_KEY && !!status.RESEND_FROM;
-  const [open, setOpen] = useState(false);
-  const [removeOpen, setRemoveOpen] = useState(false);
+function ResendCard({ status }: { status: Status; onChanged: () => void }) {
   const [testOpen, setTestOpen] = useState(false);
-  const [apiKey, setApiKey] = useState("");
-  const [fromEmail, setFromEmail] = useState("");
-  const [showKey, setShowKey] = useState(false);
   const [testTo, setTestTo] = useState("");
   const [testing, setTesting] = useState(false);
 
-  const save = useMutation({
-    mutationFn: async () => {
-      if (apiKey.trim()) {
-        const { error } = await supabase.rpc("set_vault_secret" as any, {
-          p_name: "RESEND_API_KEY",
-          p_value: apiKey.trim(),
-        });
-        if (error) throw error;
-      }
-      if (fromEmail.trim()) {
-        const { error } = await supabase.rpc("set_vault_secret" as any, {
-          p_name: "RESEND_FROM",
-          p_value: fromEmail.trim(),
-        });
-        if (error) throw error;
-      }
-    },
-    onSuccess: () => {
-      toast.success("Resend configurado");
-      setApiKey("");
-      setFromEmail("");
-      setOpen(false);
-      onChanged();
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-
-  const remove = useMutation({
-    mutationFn: async () => {
-      for (const name of ["RESEND_API_KEY", "RESEND_FROM", "RESEND_WEBHOOK_SECRET"]) {
-        const { error } = await supabase.rpc("delete_vault_secret" as any, { p_name: name });
-        if (error) throw error;
-      }
-    },
-    onSuccess: () => {
-      toast.success("Configuração removida");
-      setRemoveOpen(false);
-      onChanged();
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-
   const runTest = async () => {
     if (!/\S+@\S+\.\S+/.test(testTo.trim())) {
-      toast.error("Informe um e-mail válido");
+      toast.error("Indica um e-mail válido");
       return;
     }
     setTesting(true);
     try {
-      // Buscar profile_id pelo email
       const { data: profs } = await supabase
         .from("profiles")
         .select("id")
         .eq("email", testTo.trim().toLowerCase())
         .maybeSingle();
       if (!profs?.id) {
-        toast.error("Nenhum perfil com esse e-mail. Use um e-mail já registado.");
+        toast.error("Nenhum perfil com esse e-mail. Usa um e-mail já registado.");
         setTesting(false);
         return;
       }
@@ -171,100 +122,26 @@ function ResendCard({ status, onChanged }: { status: Status; onChanged: () => vo
     <>
       <IntegrationCard
         title="Resend (e-mail)"
-        description="Envio de e-mails transacionais via seu domínio verificado no Resend."
+        description="Envio de e-mails transacionais pela conta Resend ligada por conector."
         icon={Mail}
-        connected={connected}
+        connected
         extraActions={
-          connected && (
-            <>
-              <Button type="button" variant="outline" size="sm" onClick={() => setOpen(true)}>
-                <Pencil className="h-4 w-4 mr-2" /> Editar
-              </Button>
-              <Button type="button" variant="outline" size="sm" onClick={() => setTestOpen(true)}>
-                <Send className="h-4 w-4 mr-2" /> Testar envio
-              </Button>
-              <Button type="button" variant="outline" size="sm" onClick={() => setRemoveOpen(true)}>
-                <Trash2 className="h-4 w-4 mr-2" /> Remover
-              </Button>
-            </>
-          )
+          <Button type="button" variant="outline" size="sm" onClick={() => setTestOpen(true)}>
+            <Send className="h-4 w-4 mr-2" /> Testar envio
+          </Button>
         }
-        onSave={connected ? undefined : () => setOpen(true)}
-        saveLabel="Configurar"
         saving={false}
       >
-        {connected ? (
-          <p className="text-sm text-muted-foreground">
-            Chave configurada e armazenada no Vault.{" "}
-            {status.RESEND_WEBHOOK_SECRET ? "Webhook de bounce/complaint ativo." : "Webhook opcional não configurado."}
+        <div className="space-y-1 text-sm text-muted-foreground">
+          <p>
+            Ligação gerida pelo conector Resend — não é necessário introduzir chaves aqui.
           </p>
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            Conecte sua conta Resend para enviar prêmios desbloqueados, convites e notificações.
+          <p>
+            Remetente: <span className="font-medium text-foreground">Indica+ Luciano Larrossa &lt;cursos@lucianolarrossa.com&gt;</span> (domínio verificado).
           </p>
-        )}
+          {status.RESEND_WEBHOOK_SECRET && <p>Webhook de bounce/complaint ativo.</p>}
+        </div>
       </IntegrationCard>
-
-      {/* Save dialog */}
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{connected ? "Editar integração Resend" : "Configurar Resend"}</DialogTitle>
-            <DialogDescription>
-              A chave é armazenada criptografada no Vault. Deixe um campo vazio para manter o valor atual.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="rs-key" className="flex items-center">
-                API Key
-                <FieldStatusBadge filled={!!status.RESEND_API_KEY} />
-              </Label>
-              <div className="relative">
-                <Input
-                  id="rs-key"
-                  type={showKey ? "text" : "password"}
-                  placeholder={status.RESEND_API_KEY ? "Deixe em branco para manter" : "re_xxxxxxxxxxxxxxxxxxxx"}
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  className="pr-10"
-                  autoComplete="off"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowKey((v) => !v)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  tabIndex={-1}
-                >
-                  {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-              <a href="https://resend.com/api-keys" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
-                Como gerar uma API key <ExternalLink className="h-3 w-3" />
-              </a>
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="rs-from" className="flex items-center">
-                Remetente (from)
-                <FieldStatusBadge filled={!!status.RESEND_FROM} />
-              </Label>
-              <Input
-                id="rs-from"
-                placeholder={status.RESEND_FROM ? "Deixe em branco para manter" : "Indicações <indicacoes@seudominio.com>"}
-                value={fromEmail}
-                onChange={(e) => setFromEmail(e.target.value)}
-              />
-              <p className="text-xs text-muted-foreground">Domínio precisa estar verificado no Resend.</p>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)} disabled={save.isPending}>Cancelar</Button>
-            <Button onClick={() => save.mutate()} disabled={save.isPending || (!connected && !apiKey.trim() && !fromEmail.trim())}>
-              {save.isPending ? "Salvando…" : connected ? "Salvar alterações" : "Salvar"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Test dialog */}
       <Dialog open={testOpen} onOpenChange={setTestOpen}>
@@ -272,37 +149,19 @@ function ResendCard({ status, onChanged }: { status: Status; onChanged: () => vo
           <DialogHeader>
             <DialogTitle>Enviar e-mail de teste</DialogTitle>
             <DialogDescription>
-              Use o e-mail de um perfil já registado no sistema.
+              Usa o e-mail de um perfil já registado no sistema.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-1.5">
             <Label htmlFor="rs-test">Enviar para</Label>
-            <Input id="rs-test" type="email" value={testTo} onChange={(e) => setTestTo(e.target.value)} placeholder="seu@email.com" />
+            <Input id="rs-test" type="email" value={testTo} onChange={(e) => setTestTo(e.target.value)} placeholder="nome@email.com" />
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setTestOpen(false)} disabled={testing}>Cancelar</Button>
-            <Button onClick={runTest} disabled={testing}>{testing ? "Enviando…" : "Enviar teste"}</Button>
+            <Button onClick={runTest} disabled={testing}>{testing ? "A enviar…" : "Enviar teste"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {/* Remove dialog */}
-      <AlertDialog open={removeOpen} onOpenChange={setRemoveOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Remover configuração do Resend?</AlertDialogTitle>
-            <AlertDialogDescription>
-              As chaves serão apagadas do Vault e o sistema deixará de enviar e-mails até nova configuração.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={remove.isPending}>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={() => remove.mutate()} disabled={remove.isPending}>
-              {remove.isPending ? "Removendo…" : "Remover"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }

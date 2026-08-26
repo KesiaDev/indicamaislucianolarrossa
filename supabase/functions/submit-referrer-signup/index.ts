@@ -4,7 +4,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { z } from "https://esm.sh/zod@3.23.8";
 import { corsHeaders } from "../_shared/cors.ts";
 import { notifyEvent } from "../_shared/notify.ts";
-import { vaultGet } from "../_shared/vault.ts";
+import { sendEmail } from "../_shared/resend.ts";
 
 const Body = z.object({
   full_name: z.string().trim().min(2).max(120),
@@ -226,36 +226,13 @@ Deno.serve(async (req) => {
       )
     }</div>`;
 
-    // Resend direto (vault) — usa o mesmo helper das demais edge functions
-    const RESEND_API_KEY = await vaultGet("RESEND_API_KEY");
-    const RESEND_FROM = await vaultGet("RESEND_FROM");
-    if (!RESEND_API_KEY || !RESEND_FROM) {
-      return json({
-        error: "resend_not_configured",
-        missing: { resend_api_key: !RESEND_API_KEY, resend_from: !RESEND_FROM },
-      }, 503);
-    }
-
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-      },
-      body: JSON.stringify({
-        from: RESEND_FROM,
-        to: [email],
-        subject,
-        html,
-      }),
-    });
-    if (!res.ok) {
-      const details = await res.text();
-      console.error("resend error", res.status, details);
-      const hint = res.status === 401 || res.status === 403
-        ? "A RESEND_API_KEY salva em Definições → Integrações é inválida ou foi revogada. Gere uma nova chave no Resend e salve novamente."
+    // Envio pela conta Resend ligada por conector (remetente fixo verificado)
+    const sent = await sendEmail({ to: email, subject, html });
+    if (!sent.ok) {
+      const hint = sent.status === 401 || sent.status === 403
+        ? "A ligação ao Resend (conector) está inválida. Reconecta a conta Resend em Conectores."
         : "Falha ao enviar o e-mail de confirmação pelo Resend.";
-      return json({ error: "email_send_failed", status: res.status, hint, details }, 502);
+      return json({ error: "email_send_failed", status: sent.status, hint, details: sent.error }, 502);
     }
 
     return json({ ok: true, signup_id: signupId });
