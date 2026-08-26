@@ -440,60 +440,20 @@ export function AdminSetupWizard({ open, onClose }: Props) {
           <div className="space-y-4">
             <div className="flex items-start gap-3 rounded-md border bg-muted/30 p-3">
               <Mail className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">
-                Configure o Resend para enviar e-mails transacionais. A chave é guardada
-                criptografada no Vault. Você pode pular e configurar depois.
-              </p>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="sw-resend-key">Resend API Key</Label>
-              <div className="relative">
-                <Input
-                  id="sw-resend-key"
-                  type={showResendKey ? "text" : "password"}
-                  placeholder="re_xxxxxxxxxxxxxxxxxxxx"
-                  value={resendKey}
-                  onChange={(e) => setResendKey(e.target.value)}
-                  disabled={skipResend}
-                  className="pr-10"
-                  autoComplete="off"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowResendKey((v) => !v)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  tabIndex={-1}
-                >
-                  {showResendKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
+              <div className="space-y-1 text-sm text-muted-foreground">
+                <p className="font-medium text-foreground">E-mails já configurados</p>
+                <p>
+                  A plataforma envia e-mails pela conta Resend ligada por conector — não é
+                  preciso introduzir chaves nem verificar domínios aqui.
+                </p>
+                <p>
+                  Remetente: <span className="font-medium text-foreground">Indica+ Luciano Larrossa &lt;cursos@lucianolarrossa.com&gt;</span>
+                </p>
               </div>
-              <a
-                href="https://resend.com/api-keys"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
-              >
-                Como gerar uma API key no Resend <ExternalLink className="h-3 w-3" />
-              </a>
             </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="sw-resend-from">Remetente (from)</Label>
-              <Input
-                id="sw-resend-from"
-                placeholder="Indicações <indicacoes@seudominio.com>"
-                value={resendFrom}
-                onChange={(e) => setResendFrom(e.target.value)}
-                disabled={skipResend}
-              />
-              <p className="text-xs text-muted-foreground">Use um domínio verificado no Resend.</p>
-            </div>
-
-            <label className="flex items-center gap-2 text-sm text-muted-foreground">
-              <input type="checkbox" checked={skipResend} onChange={(e) => setSkipResend(e.target.checked)} />
-              Ignorar por agora — configuro depois em Definições → Integrações.
-            </label>
+            <p className="text-xs text-muted-foreground">
+              Podes enviar um e-mail de teste em Definições → Integrações.
+            </p>
           </div>
         )}
 
