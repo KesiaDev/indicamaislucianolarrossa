@@ -4,7 +4,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { z } from "https://esm.sh/zod@3.23.8";
 import { corsHeaders } from "../_shared/cors.ts";
 import { notifyEvent } from "../_shared/notify.ts";
-import { vaultGet } from "../_shared/vault.ts";
+import { sendEmail } from "../_shared/resend.ts";
 
 const Body = z.object({
   full_name: z.string().trim().min(2).max(120),
