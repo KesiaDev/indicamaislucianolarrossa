@@ -203,6 +203,7 @@ Deno.serve(async (req) => {
     let resolvedSubject = subject ?? null;
     let resolvedBody = body ?? "";
     let isEvent = false;
+    let whatsappTemplateName: string | null = null;
 
     if (template?.kind === "event") {
       isEvent = true;
