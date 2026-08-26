@@ -83,6 +83,49 @@ async function clintResolveContact(
   return ((created as any)?.id ?? (created as any)?.data?.id ?? null) as string | null;
 }
 
+// Resolve o UUID de um template APROVADO pelo nome, para um número (channel account).
+async function clintResolveTemplateId(
+  apiKey: string,
+  channelAccountId: string,
+  name: string,
+): Promise<string | null> {
+  const res = await fetch(
+    `${CLINT_BASE}/v2/message-templates?channel_account_id=${encodeURIComponent(channelAccountId)}&limit=100`,
+    { headers: { "Content-Type": "application/json", "api-token": apiKey } },
+  );
+  if (!res.ok) {
+    console.error("clint templates list failed", res.status, await res.text());
+    return null;
+  }
+  const payload = await res.json().catch(() => ({}));
+  const list = ((payload as any)?.data ?? []) as any[];
+  const tpl = list.find((t) => t?.name === name && t?.status === "APPROVED");
+  return (tpl?.id ?? null) as string | null;
+}
+
+// Envia um template aprovado (necessário fora da janela de 24h da Meta).
+async function clintSendTemplate(
+  apiKey: string,
+  channelAccountId: string,
+  contactId: string,
+  templateId: string,
+): Promise<{ ok: boolean; messageId?: string | null; error?: string }> {
+  const res = await fetch(`${CLINT_BASE}/v2/messages/template`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "api-token": apiKey },
+    body: JSON.stringify({
+      channel_account_id: channelAccountId,
+      contact_id: contactId,
+      template_id: templateId,
+    }),
+  });
+  const payload = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    return { ok: false, error: (payload as any)?.message || `clint_template_${res.status}` };
+  }
+  return { ok: true, messageId: (payload as any)?.data?.message_id ?? null };
+}
+
 
 // --- E.164 normalization (PT-aware, com fallback BR) ---
 function toE164(phone: string | null | undefined): string | null {
