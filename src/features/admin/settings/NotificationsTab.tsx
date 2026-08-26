@@ -27,6 +27,7 @@ type Template = {
   channel: Channel;
   subject: string | null;
   body: string;
+  whatsapp_template?: string | null;
 };
 
 type EventDef = {
@@ -272,6 +273,7 @@ function TemplateEditor({
   const { profile } = useAuth();
   const [subject, setSubject] = useState(template?.subject ?? "");
   const [body, setBody] = useState(template?.body ?? "");
+  const [waTemplate, setWaTemplate] = useState(template?.whatsapp_template ?? "");
   const [testTo, setTestTo] = useState("");
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
@@ -279,7 +281,8 @@ function TemplateEditor({
   useEffect(() => {
     setSubject(template?.subject ?? "");
     setBody(template?.body ?? "");
-  }, [template?.subject, template?.body]);
+    setWaTemplate(template?.whatsapp_template ?? "");
+  }, [template?.subject, template?.body, template?.whatsapp_template]);
 
   const insertPlaceholder = (ph: string) => {
     setBody((prev) => prev + (prev.endsWith(" ") || prev === "" ? "" : " ") + ph);
@@ -295,6 +298,7 @@ function TemplateEditor({
           channel,
           subject: channel === "email" ? subject : null,
           body,
+          whatsapp_template: channel === "whatsapp" ? (waTemplate.trim() || null) : null,
         });
       if (error) throw error;
       toast.success("Template salvo");
