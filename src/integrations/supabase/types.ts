@@ -362,6 +362,7 @@ export type Database = {
           event_key: string
           subject: string | null
           updated_at: string
+          whatsapp_template: string | null
         }
         Insert: {
           body: string
@@ -369,6 +370,7 @@ export type Database = {
           event_key: string
           subject?: string | null
           updated_at?: string
+          whatsapp_template?: string | null
         }
         Update: {
           body?: string
@@ -376,6 +378,7 @@ export type Database = {
           event_key?: string
           subject?: string | null
           updated_at?: string
+          whatsapp_template?: string | null
         }
         Relationships: []
       }
