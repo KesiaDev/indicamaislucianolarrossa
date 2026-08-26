@@ -387,11 +387,29 @@ function TemplateEditor({
 
         {channel === "whatsapp" && (
           <div>
+            <Label className="text-xs">Template da Clint (1ª mensagem)</Label>
+            <Input
+              value={waTemplate}
+              onChange={(e) => setWaTemplate(e.target.value)}
+              placeholder="Ex.: indica_convite"
+              className="font-mono text-xs"
+            />
+            <p className="text-[11px] text-muted-foreground mt-1">
+              Regra da Meta: fora da janela de 24h só é possível enviar um{" "}
+              <strong>template aprovado</strong>. Indique aqui o nome do template
+              (exatamente como está na Clint). Se o contato já falou contigo nas
+              últimas 24h, é enviado o texto livre acima.
+            </p>
+          </div>
+        )}
+
+        {channel === "whatsapp" && (
+          <div>
             <Label className="text-xs">Telefone para teste (opcional)</Label>
             <Input
               value={testTo}
               onChange={(e) => setTestTo(e.target.value)}
-              placeholder="+5511999999999"
+              placeholder="+351912345678"
             />
             <p className="text-[11px] text-muted-foreground mt-1">
               Se vazio, usa o telefone do seu perfil.
