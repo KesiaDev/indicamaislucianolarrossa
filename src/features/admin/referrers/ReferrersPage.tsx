@@ -191,9 +191,19 @@ export default function ReferrersPage() {
   const inviteMut = useMutation({
     mutationFn: async () => {
       if (!inviteEmail) throw new Error("Informe o e-mail");
+      // Garante sessão válida (renova o token se estiver expirado)
+      const { data: sess } = await supabase.auth.getSession();
+      let token = sess.session?.access_token;
+      if (!token) {
+        const { data: refreshed } = await supabase.auth.refreshSession();
+        token = refreshed.session?.access_token;
+      }
+      if (!token) throw new Error("Sessão expirada. Entra novamente para convidar.");
       const { data, error } = await supabase.functions.invoke("invite-referrer", {
         body: { email: inviteEmail, full_name: inviteName || null },
+        headers: { Authorization: `Bearer ${token}` },
       });
+
       if (error) {
         // Tenta extrair payload JSON do erro retornado pela edge function
         const ctx: any = (error as any).context;
