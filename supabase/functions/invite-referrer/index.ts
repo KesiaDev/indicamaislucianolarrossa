@@ -2,7 +2,7 @@ import { z } from "https://esm.sh/zod@3.23.8";
 import { corsHeaders } from "../_shared/cors.ts";
 import { requireAdmin } from "../_shared/auth.ts";
 import { notifyEvent } from "../_shared/notify.ts";
-import { vaultGet } from "../_shared/vault.ts";
+
 
 const Body = z.object({
   email: z.string().trim().email().max(255),
