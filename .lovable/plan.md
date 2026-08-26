@@ -12,7 +12,7 @@ Acabaste de ligar a conta **Resend LLMidia** pelo módulo de conectores. Essa co
 
 1. **Ligar a conexão Resend ao projeto** (o cartão de ligação aparece no chat; escolhes a conexão "Resend LLMidia").
 2. **Passar todos os envios pelo conector**: um único ponto central de envio, autenticado pela conexão, sem chaves guardadas à mão.
-3. **Remetente único e verificado**: passa a sair de `lucianolarrossa.com` (por exemplo `Indica+ Luciano Larrossa <indica@lucianolarrossa.com>`), configurável nas Definições.
+3. **Remetente fixo e verificado**: todos os e-mails saem SEMPRE de `cursos@lucianolarrossa.com` (`Indica+ Luciano Larrossa <cursos@lucianolarrossa.com>`).
 4. **E-mails de autenticação** (confirmação de registo, recuperação de palavra-passe, convite, etc.): mantêm-se os modelos já desenhados nas cores dourado/escuro, mas passam a ser enviados pela mesma conta Resend ligada, em vez do domínio `notify.llmidiaco.com`.
 5. **Limpeza**: remover a dependência do domínio `notify.llmidiaco.com` e as instruções de DNS que já não se aplicam.
 6. **Definições → Integrações**: o cartão do Resend deixa de pedir chave API; mostra que a conta está ligada por conector e permite apenas editar o remetente. O teste de envio continua a existir.
