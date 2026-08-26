@@ -22,7 +22,7 @@ export const MagicLinkEmail = ({
   siteName,
   confirmationUrl,
 }: MagicLinkEmailProps) => (
-  <Html lang="en" dir="ltr">
+  <Html lang="pt-PT" dir="ltr">
     <Head />
     <Preview>Your login link for {siteName}</Preview>
     <Body style={main}>
@@ -45,25 +45,25 @@ export const MagicLinkEmail = ({
 
 export default MagicLinkEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
+const main = { backgroundColor: '#ffffff', fontFamily: "'Inter', Helvetica, Arial, sans-serif" }
 const container = { padding: '20px 25px' }
 const h1 = {
   fontSize: '22px',
   fontWeight: 'bold' as const,
-  color: '#000000',
+  color: 'hsl(24, 20%, 12%)',
   margin: '0 0 20px',
 }
 const text = {
   fontSize: '14px',
-  color: '#55575d',
+  color: 'hsl(30, 10%, 42%)',
   lineHeight: '1.5',
   margin: '0 0 25px',
 }
 const button = {
-  backgroundColor: '#000000',
-  color: '#ffffff',
+  backgroundColor: 'hsl(38, 82%, 48%)',
+  color: 'hsl(24, 40%, 8%)',
   fontSize: '14px',
-  borderRadius: '8px',
+  borderRadius: '12px',
   padding: '12px 20px',
   textDecoration: 'none',
 }
