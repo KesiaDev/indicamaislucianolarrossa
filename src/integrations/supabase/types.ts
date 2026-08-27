@@ -943,6 +943,7 @@ export type Database = {
           total_count: number
         }[]
       }
+      get_referral_landing: { Args: { p_code: string }; Returns: Json }
       get_referrer_dashboard: {
         Args: { p_referrer_id?: string }
         Returns: Json

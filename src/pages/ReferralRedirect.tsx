@@ -56,21 +56,26 @@ export default function ReferralRedirect() {
     if (!code) { setInvalid(true); setLoading(false); return; }
     (async () => {
       try {
-        const [{ data }, { data: b }] = await Promise.all([
-          supabase
-            .from("referral_links")
-            .select("code, referrer_id, campaign_id, profiles!inner(full_name), campaigns!inner(name, landing_page_url, description, status)")
-            .eq("code", code)
-            .maybeSingle(),
-          supabase.from("app_branding").select("company_name, logo_url").eq("id", "singleton").maybeSingle(),
-        ]);
-        if (!data || !(data as any).campaigns || (data as any).campaigns.status !== "active") {
+        // RPC pública: funciona para visitantes não autenticados
+        const { data, error } = await supabase.rpc("get_referral_landing", { p_code: code });
+        const payload: any = data;
+        if (error || !payload || !payload.campaign || payload.campaign.status !== "active") {
           setInvalid(true);
         } else {
-          setLink(data as any);
-          setBranding((b as any) ?? null);
-          // Se há URL externa, abre dialog e redireciona; senão, fica na landing interna
-          if ((data as any).campaigns.landing_page_url) {
+          setLink({
+            code: payload.code,
+            referrer_id: "",
+            campaign_id: payload.campaign.id,
+            profiles: { full_name: payload.referrer_name ?? null },
+            campaigns: {
+              name: payload.campaign.name,
+              landing_page_url: payload.campaign.landing_page_url,
+              description: payload.campaign.description,
+              status: payload.campaign.status,
+            },
+          });
+          setBranding(payload.branding ?? null);
+          if (payload.campaign.landing_page_url) {
             setTimeout(() => setDialogOpen(true), 300);
           }
         }
@@ -81,6 +86,7 @@ export default function ReferralRedirect() {
       }
     })();
   }, [code]);
+
 
   // Track click sempre (para landing interna ou externa)
   useEffect(() => {
