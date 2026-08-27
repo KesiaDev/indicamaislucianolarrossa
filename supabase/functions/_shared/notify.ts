@@ -60,3 +60,34 @@ export async function notifyEvent(opts: {
     }),
   ]);
 }
+
+// Notifica todos os admins (best-effort) com um evento configurável.
+export async function notifyAdmins(opts: {
+  event_key: string;
+  data?: Record<string, unknown>;
+  related_reward_id?: string | null;
+}): Promise<void> {
+  try {
+    const { createClient } = await import("npm:@supabase/supabase-js@2");
+    const admin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
+    const { data: admins } = await admin
+      .from("profiles")
+      .select("id")
+      .eq("role", "admin");
+    await Promise.allSettled(
+      ((admins ?? []) as any[]).map((a) =>
+        postNotification({
+          profile_id: a.id,
+          channel: "email",
+          related_reward_id: opts.related_reward_id ?? null,
+          template: { kind: "event", event_key: opts.event_key, data: opts.data ?? {} },
+        })
+      ),
+    );
+  } catch (e) {
+    console.warn("notifyAdmins error", (e as Error).message);
+  }
+}
