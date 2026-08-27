@@ -21,14 +21,24 @@ function splitPhone(raw?: string | null): { ddi: string; phone: string } | null 
   if (!raw) return null;
   const digits = raw.replace(/[^0-9]/g, "");
   if (!digits) return null;
-  if (digits.length > 11 && digits.startsWith("55")) {
+  // DDI explícito
+  if (digits.length === 12 && digits.startsWith("351")) {
+    return { ddi: "351", phone: digits.slice(3) };
+  }
+  if ((digits.length === 12 || digits.length === 13) && digits.startsWith("55")) {
     return { ddi: "55", phone: digits.slice(2) };
   }
-  if (digits.length > 9 && digits.startsWith("351")) {
-    return { ddi: "351", phone: digits.slice(3) };
+  // Telemóvel português (9 dígitos, começa por 9)
+  if (digits.length === 9 && digits.startsWith("9")) {
+    return { ddi: "351", phone: digits };
+  }
+  // DDD + número brasileiro
+  if (digits.length === 10 || digits.length === 11) {
+    return { ddi: "55", phone: digits };
   }
   return { ddi: "351", phone: digits };
 }
+
 
 /** Best-effort: nunca lança, apenas registra o erro. */
 export async function createClintDeal(input: ClintDealInput): Promise<string | null> {
