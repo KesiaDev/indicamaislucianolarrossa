@@ -54,17 +54,38 @@ async function clintResolveContact(
 ): Promise<string | null> {
   const headers = { "Content-Type": "application/json", "api-token": apiKey };
 
-  const search = await fetch(
-    `${CLINT_BASE}/v1/contacts?ddi=${encodeURIComponent(ddi)}&phone=${encodeURIComponent(local)}&limit=1`,
-    { headers },
-  );
-  if (search.ok) {
-    const found = await search.json().catch(() => ({}));
-    const id = (found as any)?.data?.[0]?.id;
-    if (id) return id as string;
-  } else {
-    console.error("clint contact search failed", search.status, await search.text());
-  }
+  const findByPhone = async (): Promise<string | null> => {
+    const res = await fetch(
+      `${CLINT_BASE}/v1/contacts?ddi=${encodeURIComponent(ddi)}&phone=${encodeURIComponent(local)}&limit=1`,
+      { headers },
+    );
+    if (!res.ok) {
+      console.error("clint contact search (phone) failed", res.status, await res.text());
+      return null;
+    }
+    const found = await res.json().catch(() => ({}));
+    return ((found as any)?.data?.[0]?.id ?? null) as string | null;
+  };
+
+  const findByEmail = async (): Promise<string | null> => {
+    if (!email) return null;
+    const res = await fetch(
+      `${CLINT_BASE}/v1/contacts?email=${encodeURIComponent(email)}&limit=1`,
+      { headers },
+    );
+    if (!res.ok) {
+      console.error("clint contact search (email) failed", res.status, await res.text());
+      return null;
+    }
+    const found = await res.json().catch(() => ({}));
+    return ((found as any)?.data?.[0]?.id ?? null) as string | null;
+  };
+
+  const byPhone = await findByPhone();
+  if (byPhone) return byPhone;
+
+  const byEmail = await findByEmail();
+  if (byEmail) return byEmail;
 
   const create = await fetch(`${CLINT_BASE}/v1/contacts`, {
     method: "POST",
@@ -78,7 +99,12 @@ async function clintResolveContact(
   });
   const created = await create.json().catch(() => ({}));
   if (!create.ok) {
-    throw new Error((created as any)?.message || `clint_contact_${create.status}`);
+    const msg = String((created as any)?.message ?? "");
+    if (/email already exists/i.test(msg)) {
+      const retry = await findByEmail();
+      if (retry) return retry;
+    }
+    throw new Error(msg || `clint_contact_${create.status}`);
   }
   return ((created as any)?.id ?? (created as any)?.data?.id ?? null) as string | null;
 }
