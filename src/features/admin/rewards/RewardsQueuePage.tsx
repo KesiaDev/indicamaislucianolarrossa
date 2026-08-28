@@ -96,18 +96,19 @@ export default function RewardsQueuePage() {
 
   const approveMut = useMutation({
     mutationFn: async (ids: string[]) => {
-      const { data: userRes } = await supabase.auth.getUser();
-      const uid = userRes.user?.id;
       const items = list.filter((r) => ids.includes(r.id));
-      const now = new Date().toISOString();
       let ok = 0;
       for (const r of items) {
         const needsCode =
           (r.reward_type === "discount" || r.reward_type === "gift_card") && !r.redemption_code;
-        const payload: any = { status: "approved", approved_at: now, approved_by: uid };
-        if (needsCode) payload.redemption_code = genCode();
-        const { error } = await supabase.from("rewards").update(payload).eq("id", r.id);
-        if (error) toast.error("Falha ao aprovar", { description: error.message });
+        const { data, error } = await supabase.functions.invoke("approve-reward", {
+          body: {
+            reward_id: r.id,
+            ...(needsCode ? { redemption_code: genCode() } : {}),
+          },
+        });
+        const errMsg = error?.message ?? (data as any)?.error;
+        if (errMsg) toast.error("Falha ao aprovar", { description: String(errMsg) });
         else ok++;
       }
       return ok;
@@ -116,19 +117,24 @@ export default function RewardsQueuePage() {
       if (ok > 0) toast.success(`${ok} prêmio(s) aprovado(s)`);
       invalidateAll();
     },
+    onError: (e: any) => toast.error("Erro", { description: e?.message }),
   });
 
   const payMut = useMutation({
     mutationFn: async (ids: string[]) => {
-      const { error } = await supabase
-        .from("rewards")
-        .update({ status: "paid", paid_at: new Date().toISOString() })
-        .in("id", ids);
-      if (error) throw error;
-      return ids.length;
+      let ok = 0;
+      for (const id of ids) {
+        const { data, error } = await supabase.functions.invoke("pay-reward", {
+          body: { reward_id: id },
+        });
+        const errMsg = error?.message ?? (data as any)?.error;
+        if (errMsg) toast.error("Falha ao pagar", { description: String(errMsg) });
+        else ok++;
+      }
+      return ok;
     },
-    onSuccess: (n) => {
-      toast.success(`${n} prêmio(s) marcado(s) como pago`);
+    onSuccess: (ok) => {
+      if (ok > 0) toast.success(`${ok} prêmio(s) marcado(s) como pago`);
       invalidateAll();
     },
     onError: (e: any) => toast.error("Erro", { description: e?.message }),
@@ -151,6 +157,7 @@ export default function RewardsQueuePage() {
     },
     onError: (e: any) => toast.error("Erro", { description: e?.message }),
   });
+
 
   const busy = approveMut.isPending || payMut.isPending || rejectMut.isPending;
 

@@ -98,6 +98,19 @@ const EVENTS: EventDef[] = [
       "{{company_name}}",
     ],
   },
+  {
+    key: "reward_pending_admin",
+    label: "Prémio pendente (admins)",
+    description: "Enviado aos admins quando um novo prémio entra na fila de aprovação.",
+    channels: ["email"],
+    placeholders: [
+      "{{referrer_name}}",
+      "{{reward_description}}",
+      "{{rewards_count}}",
+      "{{queue_url}}",
+      "{{company_name}}",
+    ],
+  },
 ];
 
 export function NotificationsTab() {

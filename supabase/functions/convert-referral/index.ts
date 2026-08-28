@@ -2,7 +2,7 @@
 import { z } from "https://esm.sh/zod@3.23.8";
 import { corsHeaders } from "../_shared/cors.ts";
 import { requireAdmin } from "../_shared/auth.ts";
-import { notifyEvent } from "../_shared/notify.ts";
+import { notifyEvent, notifyAdmins } from "../_shared/notify.ts";
 
 const Body = z.object({
   referral_id: z.string().uuid(),
@@ -115,6 +115,25 @@ Deno.serve(async (req) => {
         conversion_value: conversion_value ?? "",
       },
     });
+
+    // Best-effort: avisa os admins que há prémios pendentes de aprovação
+    if (grants.length > 0) {
+      const { data: refProfile } = await admin
+        .from("profiles")
+        .select("full_name, email")
+        .eq("id", referrerId)
+        .maybeSingle();
+      await notifyAdmins({
+        event_key: "reward_pending_admin",
+        data: {
+          referrer_name:
+            (refProfile as any)?.full_name ?? (refProfile as any)?.email ?? "",
+          reward_description: grants.map((g) => g.reward_description).join(", "),
+          rewards_count: grants.length,
+          queue_url: "https://indicamaislucianolarrossa.lovable.app/admin/rewards-queue",
+        },
+      });
+    }
 
     return new Response(JSON.stringify({ ok: true, grants: grants.length, points: totalPoints }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

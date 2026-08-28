@@ -5,7 +5,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 import { z } from "https://esm.sh/zod@3.23.8";
 import { corsHeaders } from "../_shared/cors.ts";
 import { vaultGet } from "../_shared/vault.ts";
-import { notifyEvent } from "../_shared/notify.ts";
+import { notifyEvent, notifyAdmins } from "../_shared/notify.ts";
 
 const Body = z.object({
   external_order_id: z.string().min(1).max(200),
@@ -119,7 +119,7 @@ Deno.serve(async (req) => {
     // Best-effort: notifica o indicador
     const { data: refData } = await supabase
       .from("referrals")
-      .select("referrer_id, lead_name, lead_email, campaigns:campaign_id(name)")
+      .select("referrer_id, lead_name, lead_email, profiles:referrer_id(full_name), campaigns:campaign_id(name)")
       .eq("id", referralId)
       .maybeSingle();
     if (refData) {
@@ -131,6 +131,22 @@ Deno.serve(async (req) => {
           lead_email: (refData as any).lead_email ?? "",
           campaign_name: (refData as any).campaigns?.name ?? "",
           conversion_value,
+        },
+      });
+    }
+
+    // Best-effort: avisa os admins que há prémios pendentes de aprovação
+    const unlocked = ((rpcResult as any)?.rewards_unlocked ?? []) as any[];
+    if (unlocked.length > 0) {
+      await notifyAdmins({
+        event_key: "reward_pending_admin",
+        data: {
+          referrer_name: (refData as any)?.full_name ?? "",
+          reward_description: unlocked
+            .map((r: any) => r?.reward_description ?? r?.description ?? "prémio")
+            .join(", "),
+          rewards_count: unlocked.length,
+          queue_url: "https://indicamaislucianolarrossa.lovable.app/admin/rewards-queue",
         },
       });
     }
