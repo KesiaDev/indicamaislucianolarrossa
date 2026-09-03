@@ -15,6 +15,7 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { TierBadge } from "@/components/shared/TierBadge";
 import { RewardCard } from "@/components/shared/RewardCard";
 import { ProgressRing } from "./ProgressRing";
+import { CampaignPrizes } from "@/components/shared/CampaignPrizes";
 import { celebrate } from "@/lib/celebrate";
 import { useBranding } from "@/hooks/useBranding";
 import {
@@ -303,6 +304,12 @@ export default function DashboardPage() {
                       </div>
                     </CardContent>
                   </Card>
+                  <CampaignPrizes
+                    campaignId={c.id}
+                    conversions={c.conversions ?? 0}
+                    limit={3}
+                    className="mt-3"
+                  />
                 </motion.div>
               );
             })}
