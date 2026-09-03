@@ -151,7 +151,7 @@ export default function DashboardPage() {
     );
   }
 
-  const campaigns = dash?.campaigns ?? [];
+  const campaigns = (dash?.campaigns ?? []).filter((c) => c.status === "active");
   const rewards = (dash?.recent_rewards ?? []).slice(0, 3);
 
   return (

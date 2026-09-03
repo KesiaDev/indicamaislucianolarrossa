@@ -152,8 +152,8 @@ export function CampaignPrizes({ campaignId, conversions = 0, limit, className }
                           {unlocked
                             ? "Desbloqueado! 🎉"
                             : remaining === 1
-                              ? "Falta só 1 amigo a comprar 🚀"
-                              : `Faltam ${remaining} amigos a comprar`}
+                              ? "Falta só 1 venda 🚀"
+                              : `Faltam ${remaining} vendas`}
                           {r.points_per_conversion > 0 &&
                             ` · +${r.points_per_conversion} pontos por venda`}
                         </p>
