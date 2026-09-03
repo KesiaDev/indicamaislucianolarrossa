@@ -11,6 +11,7 @@ import { Loading } from "@/components/shared/Loading";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { KpiCard } from "@/components/shared/KpiCard";
 import { ShareButton } from "@/components/shared/ShareButton";
+import { CampaignPrizes } from "@/components/shared/CampaignPrizes";
 import { celebrate, vibrate } from "@/lib/celebrate";
 import { cn } from "@/lib/utils";
 import {
@@ -286,6 +287,9 @@ export default function SharePage() {
         <KpiCard label="indicações" value={stats.referrals} icon={Inbox} tone="accent" />
         <KpiCard label="amigos" value={stats.conversions} icon={CheckCircle2} tone="success" />
       </div>
+
+      {/* Prémios da campanha */}
+      <CampaignPrizes campaignId={campaign.id} conversions={stats.conversions} />
 
       {/* Tutorial */}
       <Card className="shadow-card rounded-2xl">
