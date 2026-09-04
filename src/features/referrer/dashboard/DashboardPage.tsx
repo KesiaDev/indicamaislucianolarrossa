@@ -256,7 +256,9 @@ export default function DashboardPage() {
                       : `Faltam ${remaining} indicações${nr.reward_description ? ` pra ganhar ${nr.reward_description}` : ""} 🎁`;
               return (
                 <motion.div
+                  className="min-w-0"
                   key={c.id}
+
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05, duration: 0.3, ease: "easeOut" }}
