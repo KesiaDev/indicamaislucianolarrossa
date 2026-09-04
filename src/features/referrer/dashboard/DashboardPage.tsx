@@ -250,10 +250,10 @@ export default function DashboardPage() {
                 : remaining === 0
                   ? "Recompensa desbloqueada! 🎉"
                   : remaining === 1
-                    ? `Falta só 1 amigo pra ganhar ${nr.reward_description}! 🎁`
+                    ? `Falta só 1 indicação${nr.reward_description ? ` pra ganhar ${nr.reward_description}` : ""}! 🎁`
                     : remaining! <= 3
                       ? `Faltam ${remaining}! Você tá voando 🚀`
-                      : `Faltam ${remaining} amigos pra ganhar ${nr.reward_description} 🎁`;
+                      : `Faltam ${remaining} indicações${nr.reward_description ? ` pra ganhar ${nr.reward_description}` : ""} 🎁`;
               return (
                 <motion.div
                   key={c.id}
