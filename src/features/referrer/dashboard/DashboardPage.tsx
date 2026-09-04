@@ -280,9 +280,6 @@ export default function DashboardPage() {
                             <span className="h-1.5 w-1.5 rounded-full bg-sidebar-primary/60" aria-hidden />
                           </span>
                         ))}
-
-                          </span>
-                        ))}
                       </div>
                     </div>
                     <Badge variant="secondary" className="capitalize shrink-0 rounded-full">
