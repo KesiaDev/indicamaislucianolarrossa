@@ -611,7 +611,9 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           }
           .auth-bg-photo {
             width: 100%;
-            object-position: 62% 6%;
+            height: 58%;
+            object-position: 60% 22%;
+
             -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 92%);
             mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 92%);
             -webkit-mask-composite: source-over;
