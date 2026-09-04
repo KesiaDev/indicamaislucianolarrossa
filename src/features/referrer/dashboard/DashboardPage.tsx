@@ -261,24 +261,32 @@ export default function DashboardPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05, duration: 0.3, ease: "easeOut" }}
                 >
-                  <div className="mb-2 flex items-center gap-2">
-                    <div className="flex-1 overflow-hidden rounded-xl bg-gradient-to-r from-primary/15 via-accent/15 to-primary/15 py-2">
-                      <div className="flex w-max animate-marquee gap-10 whitespace-nowrap will-change-transform">
-                        <span className="text-lg md:text-xl font-extrabold tracking-tight">
-                          {c.name}
-                        </span>
-                        <span
-                          aria-hidden
-                          className="text-lg md:text-xl font-extrabold tracking-tight"
-                        >
-                          {c.name}
-                        </span>
+                  <div className="mb-3 flex items-center gap-2">
+                    <div
+                      className="group relative flex-1 overflow-hidden rounded-full border border-primary/20 bg-gradient-to-r from-background via-primary/10 to-background py-2 backdrop-blur-sm"
+                      style={{
+                        maskImage:
+                          "linear-gradient(to right, transparent, black 12%, black 88%, transparent)",
+                        WebkitMaskImage:
+                          "linear-gradient(to right, transparent, black 12%, black 88%, transparent)",
+                      }}
+                    >
+                      <div className="flex w-max animate-marquee items-center gap-6 whitespace-nowrap will-change-transform group-hover:[animation-play-state:paused]">
+                        {[0, 1, 2, 3].map((k) => (
+                          <span key={k} className="flex items-center gap-6">
+                            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-sm md:text-base font-semibold uppercase tracking-[0.18em] text-transparent">
+                              {c.name}
+                            </span>
+                            <span className="h-1.5 w-1.5 rounded-full bg-primary/50" aria-hidden />
+                          </span>
+                        ))}
                       </div>
                     </div>
-                    <Badge variant="secondary" className="capitalize shrink-0">
+                    <Badge variant="secondary" className="capitalize shrink-0 rounded-full">
                       {c.status}
                     </Badge>
                   </div>
+
                   <Card className="rounded-2xl shadow-card overflow-hidden">
                     <CardContent className="p-5">
                       {nr && (
