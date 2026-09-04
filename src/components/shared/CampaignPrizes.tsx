@@ -149,11 +149,16 @@ export function CampaignPrizes({ campaignId, conversions = 0, limit, className }
                       <div className="mt-2 space-y-1">
                         <Progress value={pct} className="h-1.5" />
                         <p className="text-[11px] font-medium text-muted-foreground">
-                          {unlocked
-                            ? "Desbloqueado! 🎉"
-                            : remaining === 1
-                              ? "Falta só 1 venda 🚀"
-                              : `Faltam ${remaining} vendas`}
+                          {(() => {
+                            const isSale = r.reward_type === "cash" || r.points_per_conversion >= 500;
+                            const unit = isSale ? "venda" : "indicação";
+                            const units = isSale ? "vendas" : "indicações";
+                            return unlocked
+                              ? "Desbloqueado! 🎉"
+                              : remaining === 1
+                                ? `Falta só 1 ${unit} 🚀`
+                                : `Faltam ${remaining} ${units}`;
+                          })()}
                           {r.points_per_conversion > 0 &&
                             ` · +${r.points_per_conversion} pontos por venda`}
                         </p>
