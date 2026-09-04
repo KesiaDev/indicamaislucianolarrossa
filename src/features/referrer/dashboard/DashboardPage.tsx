@@ -263,21 +263,21 @@ export default function DashboardPage() {
                 >
                   <div className="mb-3 flex items-center gap-2">
                     <div
-                      className="group relative flex-1 overflow-hidden rounded-full border border-primary/20 bg-gradient-to-r from-background via-primary/10 to-background py-2 backdrop-blur-sm"
+                      className="group relative flex-1 overflow-hidden rounded-full border border-sidebar-border bg-sidebar py-2"
                       style={{
                         maskImage:
-                          "linear-gradient(to right, transparent, black 12%, black 88%, transparent)",
+                          "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
                         WebkitMaskImage:
-                          "linear-gradient(to right, transparent, black 12%, black 88%, transparent)",
+                          "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
                       }}
                     >
                       <div className="flex w-max animate-marquee items-center gap-6 whitespace-nowrap will-change-transform group-hover:[animation-play-state:paused]">
                         {[0, 1, 2, 3].map((k) => (
                           <span key={k} className="flex items-center gap-6">
-                            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-sm md:text-base font-semibold uppercase tracking-[0.18em] text-transparent">
+                            <span className="text-sm md:text-base font-semibold uppercase tracking-[0.18em] text-sidebar-primary">
                               {c.name}
                             </span>
-                            <span className="h-1.5 w-1.5 rounded-full bg-primary/50" aria-hidden />
+                            <span className="h-1.5 w-1.5 rounded-full bg-sidebar-primary/60" aria-hidden />
                           </span>
                         ))}
                       </div>
