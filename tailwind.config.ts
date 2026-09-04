@@ -137,6 +137,7 @@ export default {
         "slide-in-bottom": "slide-in-bottom 0.35s ease-out both",
         "bounce-in": "bounce-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both",
         "pulse-glow": "pulse-glow 2s ease-out infinite",
+        marquee: "marquee 14s linear infinite",
       },
     },
   },
