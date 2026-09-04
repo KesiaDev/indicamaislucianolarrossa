@@ -261,9 +261,10 @@ export default function DashboardPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05, duration: 0.3, ease: "easeOut" }}
                 >
-                  <div className="mb-3 flex items-center gap-2">
+                  <div className="mb-3 flex w-full min-w-0 items-center gap-2">
                     <div
-                      className="group relative flex-1 overflow-hidden rounded-full border border-sidebar-border bg-sidebar py-2"
+                      className="group relative flex-1 min-w-0 overflow-hidden rounded-full border border-sidebar-border bg-sidebar py-2"
+
                       style={{
                         maskImage:
                           "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
