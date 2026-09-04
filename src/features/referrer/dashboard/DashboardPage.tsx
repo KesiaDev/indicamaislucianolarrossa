@@ -250,10 +250,10 @@ export default function DashboardPage() {
                 : remaining === 0
                   ? "Recompensa desbloqueada! 🎉"
                   : remaining === 1
-                    ? `Falta só 1 amigo pra ganhar ${nr.reward_description}! 🎁`
+                    ? `Falta só 1 indicação${nr.reward_description ? ` pra ganhar ${nr.reward_description}` : ""}! 🎁`
                     : remaining! <= 3
                       ? `Faltam ${remaining}! Você tá voando 🚀`
-                      : `Faltam ${remaining} amigos pra ganhar ${nr.reward_description} 🎁`;
+                      : `Faltam ${remaining} indicações${nr.reward_description ? ` pra ganhar ${nr.reward_description}` : ""} 🎁`;
               return (
                 <motion.div
                   key={c.id}
@@ -261,14 +261,26 @@ export default function DashboardPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05, duration: 0.3, ease: "easeOut" }}
                 >
+                  <div className="mb-2 flex items-center gap-2">
+                    <div className="flex-1 overflow-hidden rounded-xl bg-gradient-to-r from-primary/15 via-accent/15 to-primary/15 py-2">
+                      <div className="flex w-max animate-marquee gap-10 whitespace-nowrap will-change-transform">
+                        <span className="text-lg md:text-xl font-extrabold tracking-tight">
+                          {c.name}
+                        </span>
+                        <span
+                          aria-hidden
+                          className="text-lg md:text-xl font-extrabold tracking-tight"
+                        >
+                          {c.name}
+                        </span>
+                      </div>
+                    </div>
+                    <Badge variant="secondary" className="capitalize shrink-0">
+                      {c.status}
+                    </Badge>
+                  </div>
                   <Card className="rounded-2xl shadow-card overflow-hidden">
                     <CardContent className="p-5">
-                      <div className="flex items-center justify-between mb-4">
-                        <h4 className="font-bold truncate">{c.name}</h4>
-                        <Badge variant="secondary" className="capitalize">
-                          {c.status}
-                        </Badge>
-                      </div>
                       {nr && (
                         <div className="flex justify-center mb-4">
                           <ProgressRing progress={nr.progress} target={nr.target} label="amigos" />
