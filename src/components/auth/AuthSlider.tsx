@@ -609,7 +609,21 @@ export default function AuthSlider({ initialMode = "login" }: AuthSliderProps) {
           .auth-card {
             padding: 22px 20px 26px;
           }
+          .auth-bg-photo {
+            width: 100%;
+            object-position: 62% 6%;
+            -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 92%);
+            mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 92%);
+            -webkit-mask-composite: source-over;
+            mask-composite: add;
+          }
+          .auth-bg-veil {
+            background:
+              radial-gradient(80% 50% at 50% 18%, hsl(32 90% 55% / 0.10) 0%, transparent 65%),
+              linear-gradient(180deg, hsl(20 25% 3% / 0.55) 0%, hsl(20 25% 3% / 0.35) 22%, hsl(20 22% 3% / 0.80) 58%, hsl(20 20% 2% / 0.97) 100%);
+          }
         }
+
       `}</style>
     </main>
   );
