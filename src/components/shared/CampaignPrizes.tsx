@@ -178,6 +178,16 @@ export function CampaignPrizes({ campaignId, conversions = 0, limit, className }
             );
           })}
         </ul>
+
+        {hiddenCount > 0 && (
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            className="w-full rounded-xl border border-border py-2 text-xs font-semibold text-primary hover:bg-muted/40 transition-colors"
+          >
+            {expanded ? "Ver menos" : `Ver todos os prémios (+${hiddenCount})`}
+          </button>
+        )}
       </CardContent>
     </Card>
   );
