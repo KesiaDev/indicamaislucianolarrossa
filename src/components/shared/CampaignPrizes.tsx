@@ -76,7 +76,8 @@ export function CampaignPrizes({ campaignId, conversions = 0, limit, className }
 
   if (isLoading || !data?.length) return null;
 
-  const rules = limit ? data.slice(0, limit) : data;
+  const rules = limit && !expanded ? data.slice(0, limit) : data;
+  const hiddenCount = limit ? Math.max(0, data.length - limit) : 0;
 
   return (
     <Card className={cn("shadow-card rounded-2xl", className)}>
