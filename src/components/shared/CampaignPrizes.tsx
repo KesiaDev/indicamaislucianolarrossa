@@ -58,6 +58,7 @@ interface Props {
 }
 
 export function CampaignPrizes({ campaignId, conversions = 0, limit, className }: Props) {
+  const [expanded, setExpanded] = useState(false);
   const { data, isLoading } = useQuery({
     queryKey: ["campaign-prizes", campaignId],
     enabled: !!campaignId,
