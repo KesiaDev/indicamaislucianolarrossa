@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -58,6 +59,7 @@ interface Props {
 }
 
 export function CampaignPrizes({ campaignId, conversions = 0, limit, className }: Props) {
+  const [expanded, setExpanded] = useState(false);
   const { data, isLoading } = useQuery({
     queryKey: ["campaign-prizes", campaignId],
     enabled: !!campaignId,
@@ -76,7 +78,8 @@ export function CampaignPrizes({ campaignId, conversions = 0, limit, className }
 
   if (isLoading || !data?.length) return null;
 
-  const rules = limit ? data.slice(0, limit) : data;
+  const rules = limit && !expanded ? data.slice(0, limit) : data;
+  const hiddenCount = limit ? Math.max(0, data.length - limit) : 0;
 
   return (
     <Card className={cn("shadow-card rounded-2xl", className)}>
@@ -175,6 +178,16 @@ export function CampaignPrizes({ campaignId, conversions = 0, limit, className }
             );
           })}
         </ul>
+
+        {hiddenCount > 0 && (
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            className="w-full rounded-xl border border-border py-2 text-xs font-semibold text-primary hover:bg-muted/40 transition-colors"
+          >
+            {expanded ? "Ver menos" : `Ver todos os prémios (+${hiddenCount})`}
+          </button>
+        )}
       </CardContent>
     </Card>
   );
