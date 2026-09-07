@@ -94,7 +94,12 @@ export function CampaignPrizes({ campaignId, conversions = 0, limit, className }
           </p>
         </div>
 
-        <ul className="space-y-3">
+        <ul
+          className={cn(
+            "space-y-3",
+            scrollable && "max-h-[22rem] overflow-y-auto pr-1 [scrollbar-width:thin] overscroll-contain",
+          )}
+        >
           {rules.map((r, i) => {
             const Icon = TYPE_ICON[r.reward_type] ?? Gift;
             const manual = r.trigger_count >= MANUAL_THRESHOLD;
