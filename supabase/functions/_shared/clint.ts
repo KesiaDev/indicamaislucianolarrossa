@@ -60,7 +60,9 @@ export async function createClintDeal(input: ClintDealInput): Promise<string | n
     };
     if (input.email) body.email = input.email;
     if (phone) {
-      body.phone = phone.phone;
+      // Envia o número completo com DDI (ex.: 351936441034) para a Clint
+      // não assumir o DDI 55 por defeito em números portugueses.
+      body.phone = `${phone.ddi}${phone.phone}`;
       body.ddi = phone.ddi;
     }
     if (input.fields) body.fields = input.fields;
