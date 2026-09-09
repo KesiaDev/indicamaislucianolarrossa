@@ -152,7 +152,9 @@ export default function DashboardPage() {
   }
 
   const campaigns = (dash?.campaigns ?? []).filter((c) => c.status === "active");
-  const rewards = (dash?.recent_rewards ?? []).slice(0, 3);
+  const rewards = (dash?.recent_rewards ?? [])
+    .filter((r) => r.status !== "paid")
+    .slice(0, 3);
 
   return (
     <div className="space-y-6">
