@@ -215,7 +215,7 @@ export default function RankingPage() {
                     </span>
                   </p>
                   <p className="text-xs text-muted-foreground font-medium">
-                    {me.conversions_count} amigos · {me.total_points} pts
+                    {me.total_points} pts · {me.conversions_count} vendas
                   </p>
                 </div>
               </CardContent>
@@ -277,7 +277,7 @@ export default function RankingPage() {
                           </span>
                         )}
                         <p className="text-xs text-muted-foreground font-medium">
-                          {r.conversions_count} amigos · {r.total_points} pts
+                          {r.total_points} pts · {r.conversions_count} vendas
                         </p>
                       </CardContent>
                     </Card>
