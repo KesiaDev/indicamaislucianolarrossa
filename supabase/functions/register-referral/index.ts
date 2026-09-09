@@ -29,7 +29,8 @@ Deno.serve(async (req) => {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const { code, lead_name, lead_email, lead_phone, variant_id } = parsed.data;
+    const { code, lead_name, lead_email, variant_id } = parsed.data;
+    const lead_phone = normalizePhone(parsed.data.lead_phone);
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
