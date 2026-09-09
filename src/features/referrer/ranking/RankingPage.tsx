@@ -104,17 +104,25 @@ export default function RankingPage() {
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ["ranking", year, month],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("monthly_rankings")
-        .select(
-          "position,conversions_count,total_points,referrer_id, profiles!inner(full_name,email,avatar_url, loyalty_tiers(name,color,icon))",
-        )
-        .eq("year", year)
-        .eq("month", month)
-        .order("position", { ascending: true, nullsFirst: false })
-        .limit(50);
+      const { data, error } = await supabase.rpc("get_monthly_ranking", {
+        p_year: year,
+        p_month: month,
+      });
       if (error) throw error;
-      return (data ?? []) as unknown as RankRow[];
+      return ((data ?? []) as any[]).map<RankRow>((r) => ({
+        position: r.rank_position,
+        conversions_count: r.conversions_count,
+        total_points: r.total_points,
+        referrer_id: r.referrer_id,
+        profiles: {
+          full_name: r.full_name,
+          email: r.email,
+          avatar_url: r.avatar_url,
+          loyalty_tiers: r.tier_name
+            ? { name: r.tier_name, color: r.tier_color, icon: r.tier_icon }
+            : null,
+        },
+      }));
     },
   });
 
