@@ -943,6 +943,21 @@ export type Database = {
           total_count: number
         }[]
       }
+      get_monthly_ranking: {
+        Args: { p_month: number; p_year: number }
+        Returns: {
+          avatar_url: string
+          conversions_count: number
+          email: string
+          full_name: string
+          rank_position: number
+          referrer_id: string
+          tier_color: string
+          tier_icon: string
+          tier_name: string
+          total_points: number
+        }[]
+      }
       get_referral_landing: { Args: { p_code: string }; Returns: Json }
       get_referrer_dashboard: {
         Args: { p_referrer_id?: string }
