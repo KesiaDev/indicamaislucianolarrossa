@@ -19,8 +19,12 @@ export interface ClintDealInput {
 /** Separa DDI (default 351 - Portugal) do número. */
 function splitPhone(raw?: string | null): { ddi: string; phone: string } | null {
   if (!raw) return null;
-  const digits = raw.replace(/[^0-9]/g, "");
+  let digits = raw.replace(/[^0-9]/g, "");
   if (!digits) return null;
+  // 00351... -> 351...
+  if (digits.startsWith("00")) digits = digits.slice(2);
+  // 0 seguido de 9 dígitos portugueses (0912345678) -> remove o 0
+  if (digits.length === 10 && digits.startsWith("09")) digits = digits.slice(1);
   // DDI explícito
   if (digits.length === 12 && digits.startsWith("351")) {
     return { ddi: "351", phone: digits.slice(3) };

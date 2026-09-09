@@ -8,10 +8,29 @@ import { createClintDeal } from "../_shared/clint.ts";
 const Body = z.object({
   code: z.string().min(1).max(120),
   lead_name: z.string().trim().min(1).max(120),
-  lead_email: z.string().trim().email().max(255).optional().or(z.literal("")),
-  lead_phone: z.string().trim().max(40).optional().or(z.literal("")),
+  lead_email: z.string().trim().email().max(255),
+  lead_phone: z
+    .string()
+    .trim()
+    .max(40)
+    .refine((v) => {
+      const d = v.replace(/[^0-9]/g, "").replace(/^00/, "");
+      return d.length >= 9 && d.length <= 15;
+    }, "invalid_phone"),
   variant_id: z.string().uuid().optional().nullable(),
 });
+
+/** Normaliza para formato internacional (+351 por defeito em Portugal). */
+function normalizePhone(raw: string): string {
+  let d = raw.replace(/[^0-9]/g, "");
+  if (d.startsWith("00")) d = d.slice(2);
+  if (d.length === 10 && d.startsWith("09")) d = d.slice(1);
+  if (d.length === 9 && d.startsWith("9")) return `+351${d}`;
+  if (d.length === 12 && d.startsWith("351")) return `+${d}`;
+  if ((d.length === 12 || d.length === 13) && d.startsWith("55")) return `+${d}`;
+  if (d.length === 10 || d.length === 11) return `+55${d}`;
+  return `+${d}`;
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -22,7 +41,8 @@ Deno.serve(async (req) => {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const { code, lead_name, lead_email, lead_phone, variant_id } = parsed.data;
+    const { code, lead_name, lead_email, variant_id } = parsed.data;
+    const lead_phone = normalizePhone(parsed.data.lead_phone);
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
