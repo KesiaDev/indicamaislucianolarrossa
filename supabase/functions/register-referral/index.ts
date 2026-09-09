@@ -8,8 +8,15 @@ import { createClintDeal } from "../_shared/clint.ts";
 const Body = z.object({
   code: z.string().min(1).max(120),
   lead_name: z.string().trim().min(1).max(120),
-  lead_email: z.string().trim().email().max(255).optional().or(z.literal("")),
-  lead_phone: z.string().trim().max(40).optional().or(z.literal("")),
+  lead_email: z.string().trim().email().max(255),
+  lead_phone: z
+    .string()
+    .trim()
+    .max(40)
+    .refine((v) => {
+      const d = v.replace(/[^0-9]/g, "").replace(/^00/, "");
+      return d.length >= 9 && d.length <= 15;
+    }, "invalid_phone"),
   variant_id: z.string().uuid().optional().nullable(),
 });
 

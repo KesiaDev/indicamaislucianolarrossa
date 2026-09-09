@@ -216,7 +216,7 @@ export default function ReferralRedirect() {
                 {errors.lead_email && <p className="text-xs text-destructive mt-1">{errors.lead_email.message}</p>}
               </div>
               <div>
-                <Label htmlFor="lead_phone">WhatsApp (opcional)</Label>
+                <Label htmlFor="lead_phone">WhatsApp (obrigatório)</Label>
                 <Input id="lead_phone" placeholder="(11) 99999-9999" {...register("lead_phone")} />
                 {errors.lead_phone && <p className="text-xs text-destructive mt-1">{errors.lead_phone.message}</p>}
               </div>
@@ -300,7 +300,7 @@ export default function ReferralRedirect() {
               {errors.lead_email && <p className="text-xs text-destructive mt-1">{errors.lead_email.message}</p>}
             </div>
             <div>
-              <Label htmlFor="lead_phone2">WhatsApp (opcional)</Label>
+              <Label htmlFor="lead_phone2">WhatsApp (obrigatório)</Label>
               <Input id="lead_phone2" placeholder="(11) 99999-9999" {...register("lead_phone")} />
               {errors.lead_phone && <p className="text-xs text-destructive mt-1">{errors.lead_phone.message}</p>}
             </div>
