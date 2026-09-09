@@ -620,6 +620,19 @@ function WebhookCard({ status, onChanged }: { status: Status; onChanged: () => v
             </Button>
           </div>
         </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs">URL para a Clint (negócio ganho)</Label>
+          <div className="flex gap-2">
+            <Input value={clintUrl} readOnly className="font-mono text-xs" />
+            <Button type="button" variant="outline" size="icon" onClick={() => { navigator.clipboard.writeText(clintUrl); toast.success("URL copiada"); }}>
+              <Copy className="h-4 w-4" />
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Cole na Clint em Webhooks, no evento de negócio ganho, e troque SEU_SEGREDO pela chave abaixo.
+          </p>
+        </div>
       </IntegrationCard>
 
       <Dialog open={open} onOpenChange={setOpen}>
