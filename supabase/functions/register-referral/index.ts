@@ -20,6 +20,18 @@ const Body = z.object({
   variant_id: z.string().uuid().optional().nullable(),
 });
 
+/** Normaliza para formato internacional (+351 por defeito em Portugal). */
+function normalizePhone(raw: string): string {
+  let d = raw.replace(/[^0-9]/g, "");
+  if (d.startsWith("00")) d = d.slice(2);
+  if (d.length === 10 && d.startsWith("09")) d = d.slice(1);
+  if (d.length === 9 && d.startsWith("9")) return `+351${d}`;
+  if (d.length === 12 && d.startsWith("351")) return `+${d}`;
+  if ((d.length === 12 || d.length === 13) && d.startsWith("55")) return `+${d}`;
+  if (d.length === 10 || d.length === 11) return `+55${d}`;
+  return `+${d}`;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   try {
