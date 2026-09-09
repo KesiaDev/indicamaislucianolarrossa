@@ -544,6 +544,7 @@ function WebhookCard({ status, onChanged }: { status: Status; onChanged: () => v
   const [secret, setSecret] = useState("");
   const [showSecret, setShowSecret] = useState(false);
   const url = `${FN_BASE}/conversion-webhook`;
+  const clintUrl = `${FN_BASE}/clint-webhook?token=SEU_SEGREDO`;
 
   const generate = () => {
     const arr = new Uint8Array(32);
