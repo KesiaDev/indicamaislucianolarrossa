@@ -31,7 +31,15 @@ interface LinkData {
 const LeadSchema = z.object({
   lead_name: z.string().trim().min(2, "Mínimo 2 caracteres").max(100),
   lead_email: z.string().trim().email("Email inválido").max(255),
-  lead_phone: z.string().trim().max(20).optional().or(z.literal("")),
+  lead_phone: z
+    .string()
+    .trim()
+    .min(9, "Indica o telemóvel com indicativo do país")
+    .max(20)
+    .refine((v) => {
+      const d = v.replace(/[^0-9]/g, "").replace(/^00/, "");
+      return d.length >= 9 && d.length <= 15;
+    }, "Telemóvel inválido (ex.: 912 345 678 ou +351 912 345 678)"),
 });
 type LeadForm = z.infer<typeof LeadSchema>;
 
