@@ -3,3 +3,5 @@ project_id = "bxfiwqmvzchwjogvqtvk"
 [functions]
   [functions.auth-email-hook]
     verify_jwt = false
+  [functions.clint-webhook]
+    verify_jwt = false

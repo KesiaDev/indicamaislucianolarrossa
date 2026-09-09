@@ -544,6 +544,7 @@ function WebhookCard({ status, onChanged }: { status: Status; onChanged: () => v
   const [secret, setSecret] = useState("");
   const [showSecret, setShowSecret] = useState(false);
   const url = `${FN_BASE}/conversion-webhook`;
+  const clintUrl = `${FN_BASE}/clint-webhook?token=SEU_SEGREDO`;
 
   const generate = () => {
     const arr = new Uint8Array(32);
@@ -618,6 +619,19 @@ function WebhookCard({ status, onChanged }: { status: Status; onChanged: () => v
               <Copy className="h-4 w-4" />
             </Button>
           </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs">URL para a Clint (negócio ganho)</Label>
+          <div className="flex gap-2">
+            <Input value={clintUrl} readOnly className="font-mono text-xs" />
+            <Button type="button" variant="outline" size="icon" onClick={() => { navigator.clipboard.writeText(clintUrl); toast.success("URL copiada"); }}>
+              <Copy className="h-4 w-4" />
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Cole na Clint em Webhooks, no evento de negócio ganho, e troque SEU_SEGREDO pela chave abaixo.
+          </p>
         </div>
       </IntegrationCard>
 
